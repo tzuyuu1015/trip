@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>北海道行程看板</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --accent: #4f46e5;
+      --accent-soft: #eef2ff;
+      --text-main: #111827;
+      --text-sub: #6b7280;
+      --border: #e5e7eb;
+      --radius-lg: 18px;
+      --radius-sm: 10px;
+      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: 80px;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .toolbar {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-btn {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: #374151;
+      padding: 5px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .toolbar-btn span {
+      font-size: 14px;
+    }
+
+    .toolbar-btn:hover {
+      background: #e5e7eb;
+    }
+
+    /* Board layout */
+    .board-wrapper {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 10px 6px 12px;
+      overflow-x: auto;
+    }
+
+    .board {
+      display: flex;
+      gap: 10px;
+      min-height: 260px;
+    }
+
+    .day-column {
+      background: var(--accent-soft);
+      border-radius: 14px;
+      padding: 8px;
+      min-width: 210px;
+      max-width: 240px;
+      display: flex;
+      flex-direction: column;
+      max-height: 520px;
+    }
+
+    .day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .day-title {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .day-date {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .card-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-sm);
+      padding: 6px;
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+      margin-bottom: 6px;
+      display: flex;
+      gap: 6px;
+      position: relative;
+      flex-direction: row;
+    }
+
+    .card img {
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #e5e7eb;
+    }
+
+    .card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      align-items: baseline;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-time {
+      font-size: 11px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .card-note {
+      font-size: 11px;
+      color: var(--text-sub);
+      max-height: 4.2em;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      margin-top: 4px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .map-link-btn {
+      border-radius: 999px;
+      border: 1px solid #c7d2fe;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 11px;
+      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .map-link-btn span {
+      font-size: 13px;
+    }
+
+    .map-link-btn:hover {
+      background: #c7d2fe;
+    }
+
+    .card-delete {
+      position: absolute;
+      right: 4px;
+      top: 2px;
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 2px;
+    }
+
+    .card-delete:hover {
+      color: #ef4444;
+    }
+
+    .add-btn {
+      margin-top: 2px;
+      width: 100%;
+      border-radius: 999px;
+      border: none;
+      padding: 6px 0;
+      font-size: 12px;
+      background: #e0e7ff;
+      color: #3730a3;
+      cursor: pointer;
+    }
+
+    .add-btn:hover {
+      background: #c7d2fe;
+    }
+
+    /* 共用 Modal 背景 */
+    .modal-backdrop,
+    .modal-backdrop-io {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 20;
+    }
+
+    .modal-backdrop.show,
+    .modal-backdrop-io.show {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 14px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .modal-header h2 {
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .modal-close {
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--text-sub);
+    }
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-size: 12px;
+    }
+
+    .field label {
+      color: var(--text-sub);
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .field textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .field small {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .io-textarea {
+      width: 100%;
+      min-height: 140px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px;
+    }
+
+    .tips {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .io-helper {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width: 768px) {
+      .board {
+        min-width: 100%;
+      }
+
+      .day-column {
+        min-width: 78vw;
+        max-width: 82vw;
+      }
+
+      header h1 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>北海道行程看板</h1>
+      <p>Day1～Day6 看板，可新增景點、圖片，一鍵開啟 Google Maps，也可匯出 / 匯入到其他裝置。</p>
+
+      <div class="toolbar">
+        <button class="toolbar-btn" id="exportBtn" type="button">
+          <span>⬆️</span> 匯出行程
+        </button>
+        <button class="toolbar-btn" id="importBtn" type="button">
+          <span>⬇️</span> 匯入行程
+        </button>
+      </div>
+    </header>
+
+    <div class="board-wrapper">
+      <div class="board" id="board">
+        <!-- JS 產生 Day 1~Day 6 -->
+      </div>
+    </div>
+
+    <div class="tips">
+      ✅ 每台裝置各自保存一份行程（localStorage）<br />
+      ✅ 想從電腦搬到手機：電腦按「匯出行程」複製文字 → 傳到手機 → 手機按「匯入行程」貼上 → 套用<br />
+      ✅ Map 欄位不填時，會用「景點名稱」當作 Google Maps 搜尋關鍵字
+    </div>
+  </div>
+
+  <!-- 新增景點 Modal -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>新增景點</h2>
+        <button class="modal-close" id="modalCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="daySelect">哪一天</label>
+          <select id="daySelect"></select>
+        </div>
+        <div class="field">
+          <label for="titleInput">景點 / 活動名稱 *</label>
+          <input
+            id="titleInput"
+            type="text"
+            placeholder="例如：小樽運河、札幌電視塔"
+          />
+        </div>
+        <div class="field">
+          <label for="timeInput">時間（選填）</label>
+          <input id="timeInput" type="text" placeholder="例如：09:30、下午" />
+        </div>
+        <div class="field">
+          <label for="noteInput">備註（選填）</label>
+          <textarea
+            id="noteInput"
+            placeholder="要吃的店、交通方式、小提醒..."
+          ></textarea>
+        </div>
+        <div class="field">
+          <label for="mapInput">Map 地址 / 關鍵字或網址（選填）</label>
+          <input
+            id="mapInput"
+            type="text"
+            placeholder="不填則用景點名稱搜尋；也可直接貼 Google Maps 連結"
+          />
+          <small>例如：「札幌電視塔」、「小樽運河」、「北海道札幌市中央區…」或貼整個 Google Maps URL。</small>
+        </div>
+        <div class="field">
+          <label for="imageInput">圖片網址（選填，支援 JPG/PNG/GIF）</label>
+          <input
+            id="imageInput"
+            type="url"
+            placeholder="貼上 IG / Google 相簿 / 網路照片連結"
+          />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelBtn">取消</button>
+        <button class="btn btn-primary" id="saveBtn" disabled>儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 匯出 / 匯入 Modal -->
+  <div class="modal-backdrop-io" id="ioBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="ioTitle">匯出行程</h2>
+        <button class="modal-close" id="ioCloseBtn">&times;</button>
+      </div>
+      <div class="modal-body" id="ioBody">
+        <!-- JS 依模式填入內容 -->
+      </div>
+      <div class="modal-footer" id="ioFooter">
+        <!-- JS 依模式填入按鈕 -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- 基本設定 ---
+    const DAYS = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"];
+    const STORAGE_KEY = "hokkaidoTripBoard_v3"; // 新版本 key
+
+    const boardEl = document.getElementById("board");
+
+    // 新增景點 modal 元件
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+    const daySelect = document.getElementById("daySelect");
+    const titleInput = document.getElementById("titleInput");
+    const timeInput = document.getElementById("timeInput");
+    const noteInput = document.getElementById("noteInput");
+    const mapInput = document.getElementById("mapInput");
+    const imageInput = document.getElementById("imageInput");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const saveBtn = document.getElementById("saveBtn");
+
+    // 匯出 / 匯入 modal 元件
+    const ioBackdrop = document.getElementById("ioBackdrop");
+    const ioTitle = document.getElementById("ioTitle");
+    const ioBody = document.getElementById("ioBody");
+    const ioFooter = document.getElementById("ioFooter");
+    const ioCloseBtn = document.getElementById("ioCloseBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+
+    let state = {}; // { "Day 1": [ {title, time, note, imageUrl, mapQuery}, ... ], ... }
+    let currentDayForAdd = "Day 1";
+
+    // --- 初始化 ---
+    function init() {
+      // Day 選單
+      DAYS.forEach((day) => {
+        const option = document.createElement("option");
+        option.value = day;
+        option.textContent = day;
+        daySelect.appendChild(option);
+      });
+
+      // 從 localStorage 載入
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          DAYS.forEach((d) => {
+            if (!parsed[d]) parsed[d] = [];
+          });
+          state = parsed;
+        } catch (e) {
+          state = createEmptyState();
+        }
+      } else {
+        state = createEmptyState();
+      }
+
+      renderBoard();
+      bindEvents();
+    }
+
+    function createEmptyState() {
+      const obj = {};
+      DAYS.forEach((day) => {
+        obj[day] = [];
+      });
+      return obj;
+    }
+
+    // --- 畫面渲染 ---
+    function renderBoard() {
+      boardEl.innerHTML = "";
+      DAYS.forEach((day) => {
+        const column = document.createElement("section");
+        column.className = "day-column";
+        column.dataset.day = day;
+
+        const header = document.createElement("div");
+        header.className = "day-header";
+        const title = document.createElement("div");
+        title.className = "day-title";
+        title.textContent = day;
+        const date = document.createElement("div");
+        date.className = "day-date";
+        date.textContent = ""; // 需要的話可以填實際日期
+        header.appendChild(title);
+        header.appendChild(date);
+
+        const cardList = document.createElement("div");
+        cardList.className = "card-list";
+
+        const cards = state[day] || [];
+        cards.forEach((card, index) => {
+          const cardEl = createCardElement(card, day, index);
+          cardList.appendChild(cardEl);
+        });
+
+        const addBtn = document.createElement("button");
+        addBtn.className = "add-btn";
+        addBtn.type = "button";
+        addBtn.textContent = "＋ 新增景點";
+        addBtn.addEventListener("click", () => openAddModal(day));
+
+        column.appendChild(header);
+        column.appendChild(cardList);
+        column.appendChild(addBtn);
+        boardEl.appendChild(column);
+      });
+    }
+
+    function createCardElement(card, day, index) {
+      const cardEl = document.createElement("div");
+      cardEl.className = "card";
+      cardEl.dataset.day = day;
+      cardEl.dataset.index = index.toString();
+
+      if (card.imageUrl) {
+        const img = document.createElement("img");
+        img.src = card.imageUrl;
+        img.alt = card.title || "照片";
+        cardEl.appendChild(img);
+      }
+
+      const content = document.createElement("div");
+      content.className = "card-content";
+
+      const titleRow = document.createElement("div");
+      titleRow.className = "card-title-row";
+
+      const title = document.createElement("div");
+      title.className = "card-title";
+      title.textContent = card.title || "";
+
+      const time = document.createElement("div");
+      time.className = "card-time";
+      time.textContent = card.time || "";
+
+      titleRow.appendChild(title);
+      titleRow.appendChild(time);
+
+      const note = document.createElement("div");
+      note.className = "card-note";
+      note.textContent = card.note || "";
+
+      content.appendChild(titleRow);
+      content.appendChild(note);
+
+      // footer: Google Maps 按鈕
+      const mapUrl = buildMapUrl(card);
+      if (mapUrl) {
+        const footer = document.createElement("div");
+        footer.className = "card-footer";
+
+        const mapLink = document.createElement("a");
+        mapLink.href = mapUrl;
+        mapLink.target = "_blank";
+        mapLink.rel = "noopener noreferrer";
+        mapLink.className = "map-link-btn";
+        mapLink.innerHTML = '<span>📍</span> 在 Google 地圖開啟';
+
+        footer.appendChild(mapLink);
+        content.appendChild(footer);
+      }
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "card-delete";
+      delBtn.type = "button";
+      delBtn.innerHTML = "&times;";
+      delBtn.addEventListener("click", () => deleteCard(day, index));
+
+      cardEl.appendChild(content);
+      cardEl.appendChild(delBtn);
+      return cardEl;
+    }
+
+    // 建立 Google Maps URL
+    function buildMapUrl(card) {
+      const raw = (card.mapQuery || "").trim();
+      const fallbackQuery = (card.title || "").trim();
+
+      let query = raw || fallbackQuery;
+      if (!query) return "";
+
+      if (query.startsWith("http://") || query.startsWith("https://")) {
+        return query;
+      }
+
+      const encoded = encodeURIComponent(query);
+      return `https://www.google.com/maps/search/?api=1&query=${encoded}`;
+    }
+
+    // --- 新增景點 Modal 控制 ---
+    function openAddModal(day) {
+      currentDayForAdd = day;
+      daySelect.value = day;
+      titleInput.value = "";
+      timeInput.value = "";
+      noteInput.value = "";
+      mapInput.value = "";
+      imageInput.value = "";
+      saveBtn.disabled = true;
+      modalBackdrop.classList.add("show");
+      titleInput.focus();
+    }
+
+    function closeAddModal() {
+      modalBackdrop.classList.remove("show");
+    }
+
+    // --- 匯出 / 匯入 Modal 控制 ---
+    function openExportModal() {
+      ioTitle.textContent = "匯出行程";
+      ioBody.innerHTML = "";
+      ioFooter.innerHTML = "";
+
+      const textarea = document.createElement("textarea");
+      textarea.className = "io-textarea";
+      textarea.id = "exportTextarea";
+      textarea.readOnly = false; // 方便選取
+      textarea.value = JSON.stringify(state);
+
+      const helper = document.createElement("div");
+      helper.className = "io-helper";
+      helper.textContent =
+        "步驟：1）按「全選並複製」，或自己全選複製 2）貼到 LINE/Notion 傳到手機 3）在手機頁面按「匯入行程」貼上。";
+
+      ioBody.appendChild(textarea);
+      ioBody.appendChild(helper);
+
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "btn btn-secondary";
+      closeBtn.textContent = "關閉";
+      closeBtn.type = "button";
+      closeBtn.addEventListener("click", closeIoModal);
+
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "btn btn-primary";
+      copyBtn.textContent = "全選並複製";
+      copyBtn.type = "button";
+      copyBtn.addEventListener("click", () => {
+        textarea.focus();
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          copyBtn.textContent = "已複製";
+          setTimeout(() => {
+            copyBtn.textContent = "全選並複製";
+          }, 1500);
+        } catch (e) {
+          alert("複製失敗，可以手動長按選取內容後複製。");
+        }
+      });
+
+      ioFooter.appendChild(closeBtn);
+      ioFooter.appendChild(copyBtn);
+
+      ioBackdrop.classList.add("show");
+      textarea.focus();
+      textarea.select();
+    }
+
+    function openImportModal() {
+      ioTitle.textContent = "匯入行程";
+      ioBody.innerHTML = "";
+      ioFooter.innerHTML = "";
+
+      const textarea = document.createElement("textarea");
+      textarea.className = "io-textarea";
+      textarea.id = "importTextarea";
+      textarea.placeholder =
+        "請貼上從「匯出行程」複製的那段文字（JSON）。\n貼好後按「套用行程」。";
+
+      const helper = document.createElement("div");
+      helper.className = "io-helper";
+      helper.textContent =
+        "注意：匯入後會覆蓋目前這台裝置上的行程資料（Day1～Day6）。如果要保留現在的，可以先按「匯出行程」備份。";
+
+      ioBody.appendChild(textarea);
+      ioBody.appendChild(helper);
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.className = "btn btn-secondary";
+      cancelBtn.textContent = "取消";
+      cancelBtn.type = "button";
+      cancelBtn.addEventListener("click", closeIoModal);
+
+      const applyBtn = document.createElement("button");
+      applyBtn.className = "btn btn-primary";
+      applyBtn.textContent = "套用行程";
+      applyBtn.type = "button";
+      applyBtn.addEventListener("click", () => {
+        const text = textarea.value.trim();
+        if (!text) {
+          alert("請先貼上匯出的文字。");
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(text);
+          const normalized = normalizeState(parsed);
+          state = normalized;
+          persistState();
+          renderBoard();
+          closeIoModal();
+          alert("匯入完成，現在這台裝置已套用新的行程。");
+        } catch (e) {
+          alert("匯入失敗：格式不是有效的 JSON，或內容結構不正確。請確認貼上的是原本匯出的文字。");
+        }
+      });
+
+      ioFooter.appendChild(cancelBtn);
+      ioFooter.appendChild(applyBtn);
+
+      ioBackdrop.classList.add("show");
+      textarea.focus();
+    }
+
+    function closeIoModal() {
+      ioBackdrop.classList.remove("show");
+    }
+
+    // 讓舊匯出資料也能用（只要長得像 {day:[...]} 就整理）
+    function normalizeState(rawObj) {
+      const obj = createEmptyState();
+      if (typeof rawObj !== "object" || rawObj === null) return obj;
+
+      DAYS.forEach((day) => {
+        if (Array.isArray(rawObj[day])) {
+          obj[day] = rawObj[day].map((item) => ({
+            title: (item.title || "").toString(),
+            time: (item.time || "").toString(),
+            note: (item.note || "").toString(),
+            mapQuery: (item.mapQuery || "").toString(),
+            imageUrl: (item.imageUrl || "").toString(),
+          }));
+        }
+      });
+
+      return obj;
+    }
+
+    // --- 事件 ---
+    function bindEvents() {
+      // 新增景點 modal
+      modalCloseBtn.addEventListener("click", closeAddModal);
+      cancelBtn.addEventListener("click", closeAddModal);
+
+      modalBackdrop.addEventListener("click", (e) => {
+        if (e.target === modalBackdrop) {
+          closeAddModal();
+        }
+      });
+
+      titleInput.addEventListener("input", () => {
+        saveBtn.disabled = titleInput.value.trim() === "";
+      });
+
+      saveBtn.addEventListener("click", () => {
+        const title = titleInput.value.trim();
+        if (!title) return;
+
+        const card = {
+          title,
+          time: timeInput.value.trim(),
+          note: noteInput.value.trim(),
+          mapQuery: mapInput.value.trim(),
+          imageUrl: imageInput.value.trim(),
+        };
+
+        const day = daySelect.value || currentDayForAdd;
+        state[day].push(card);
+        persistState();
+        renderBoard();
+        closeAddModal();
+      });
+
+      // 匯出 / 匯入 modal
+      ioCloseBtn.addEventListener("click", closeIoModal);
+      ioBackdrop.addEventListener("click", (e) => {
+        if (e.target === ioBackdrop) {
+          closeIoModal();
+        }
+      });
+
+      exportBtn.addEventListener("click", openExportModal);
+      importBtn.addEventListener("click", openImportModal);
+    }
+
+    // --- 刪除卡片 ---
+    function deleteCard(day, index) {
+      if (!Array.isArray(state[day])) return;
+      state[day].splice(index, 1);
+      persistState();
+      renderBoard();
+    }
+
+    // --- 儲存 ---
+    function persistState() {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    // 啟動
+    init();
+  </script>
+</body>
+</html>
