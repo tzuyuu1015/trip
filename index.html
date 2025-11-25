@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hokkaido Trip</title>
+    <title>Hokkaido V7</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#F2F2F7">
@@ -13,18 +13,12 @@
     <style>
         :root {
             --bg-body: #F2F2F7;
-            --bg-card: #FFFFFF;
-            --primary: #007AFF;
-            --primary-active: #0063ce;
-            --destructive: #FF3B30;
+            --primary: #007AFF; 
+            --accent-flight: #007AFF;
             --text-main: #1C1C1E;
             --text-sub: #8E8E93;
-            --divider: #E5E5EA;
+            --line-color: #D1D1D6;
             
-            --radius-l: 22px;
-            --radius-m: 16px;
-            
-            /* iPhone 安全區域 */
             --safe-top: env(safe-area-inset-top, 20px);
             --safe-bottom: env(safe-area-inset-bottom, 20px);
             --tab-height: calc(60px + var(--safe-bottom));
@@ -38,768 +32,408 @@
             background-color: var(--bg-body);
             color: var(--text-main);
             padding-bottom: calc(var(--tab-height) + 20px);
-            padding-top: var(--safe-top);
+            padding-top: calc(50px + var(--safe-top)); /* 預留 Header 高度 */
+            user-select: none;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            user-select: none; /* 禁止選取文字，像 App */
         }
 
-        /* --- 點擊物理回饋 (Micro-interaction) --- */
-        .clickable:active {
-            transform: scale(0.96);
-            transition: transform 0.1s ease;
-        }
-
-        /* --- Header --- */
+        /* --- Header (Top Bar) --- */
         .header-wrapper {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: rgba(242, 242, 247, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 10px 20px 10px;
-            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(242, 242, 247, 0.95);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            padding: 10px 20px; 
+            padding-top: max(10px, var(--safe-top));
+            border-bottom: 0.5px solid rgba(0,0,0,0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            height: calc(50px + var(--safe-top));
         }
+        .header-left { display: flex; flex-direction: column; }
+        .header-title { font-size: 22px; font-weight: 800; }
+        .header-subtitle { font-size: 11px; color: var(--text-sub); }
         
-        .header-title {
-            font-size: 30px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        /* Settings Icon (Top Right) */
+        .settings-btn {
+            width: 36px; height: 36px; background: #E5E5EA; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary); cursor: pointer; transition: transform 0.1s;
         }
+        .settings-btn:active { transform: scale(0.9); }
 
-        .header-subtitle {
-            font-size: 13px;
-            color: var(--text-sub);
-            font-weight: 500;
-            margin-top: 2px;
-        }
-
-        .section-title {
-            font-size: 13px;
-            color: var(--text-sub);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-            margin: 24px 20px 8px;
-        }
-
-        /* --- Cards --- */
-        .card {
-            background: var(--bg-card);
-            margin: 0 16px 12px;
-            padding: 16px;
-            border-radius: var(--radius-m);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        /* --- Buttons --- */
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
-        }
-        .btn:active { background: var(--primary-active); }
+        /* --- Timeline Styles --- */
+        .timeline-container { padding: 20px 10px 80px 0; }
+        .period-section { margin-bottom: 30px; }
+        .period-label { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 15px; padding-left: 20px; display: flex; align-items: center; }
+        .period-label::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; margin-right: 8px; }
+        .timeline-item { display: flex; position: relative; margin-bottom: 20px; }
+        .time-column { width: 55px; flex-shrink: 0; text-align: right; padding-right: 10px; padding-top: 12px; font-size: 13px; font-weight: 600; color: var(--text-main); font-variant-numeric: tabular-nums; }
+        .time-column.no-time { color: transparent; }
+        .timeline-axis { position: absolute; left: 55px; top: 0; bottom: -20px; width: 2px; background: var(--line-color); z-index: 0; }
+        .timeline-dot { position: absolute; left: 50px; top: 16px; width: 12px; height: 12px; background: var(--bg-body); border: 2px solid var(--primary); border-radius: 50%; z-index: 1; }
+        .card-column { flex: 1; min-width: 0; padding-right: 16px; }
         
-        .btn-text {
-            background: transparent;
-            border: none;
-            color: var(--primary);
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-        }
+        /* General Card */
+        .card { background: #fff; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); position: relative; overflow: hidden; transition: transform 0.1s; }
+        .card:active { transform: scale(0.98); }
+        .card-img { width: 100%; height: 140px; object-fit: cover; display: block; }
+        .card-content { padding: 12px 14px 14px; }
+        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #000; line-height: 1.3; }
+        .card-note { font-size: 13px; color: #666; background: #F2F2F7; padding: 6px 10px; border-radius: 8px; display: inline-block; margin-top: 4px; line-height: 1.4; }
+        
+        /* Action Buttons inside Card */
+        .map-btn { position: absolute; bottom: 12px; right: 12px; width: 32px; height: 32px; background: #E5F4FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); cursor: pointer; }
+        .map-icon { width: 18px; height: 18px; fill: currentColor; }
+        .btn-delete { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.1); border: none; color: #8E8E93; font-size: 14px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .card.no-img .btn-delete { background: transparent; color: #C7C7CC; top: 4px; right: 4px; }
 
-        /* --- Tab Bar --- */
-        .tab-bar {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: var(--tab-height);
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 0.5px solid rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-start;
-            padding-top: 8px;
-            z-index: 100;
-            padding-bottom: var(--safe-bottom);
-        }
+        /* === Flight Card === */
+        .flight-card { background: #fff; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); position: relative; overflow: hidden; border-left: 6px solid var(--accent-flight); }
+        .flight-header { background: #F2F8FF; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .flight-no { font-weight: 800; color: var(--accent-flight); font-size: 18px; }
+        .flight-date { font-size: 13px; color: #666; font-weight: 600; }
+        .flight-body { padding: 16px; display: flex; align-items: center; justify-content: space-between; }
+        .airport-code { font-size: 24px; font-weight: 800; color: #000; }
+        .flight-arrow { color: #ccc; font-size: 20px; }
+        .flight-time { font-size: 13px; color: #666; margin-top: 4px; }
+        .flight-footer { padding: 10px 16px; border-top: 1px dashed #eee; display: flex; gap: 10px; }
+        .ticket-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #E5E5EA; background: #fff; color: var(--primary); font-size: 14px; font-weight: 600; text-align: center; }
 
-        .tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            color: #999;
-            font-size: 10px;
-            font-weight: 500;
-            cursor: pointer;
-            width: 20%;
-            transition: color 0.2s;
-        }
+        /* === Map Page Styles === */
+        .map-hero-btn { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; border: 1px solid rgba(0,122,255,0.1); }
+        .map-hero-left { display: flex; align-items: center; gap: 16px; }
+        .map-hero-icon { width: 50px; height: 50px; background: #E5F4FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 24px; }
+        .map-hero-text h3 { margin: 0 0 4px; font-size: 18px; }
+        .map-hero-text p { margin: 0; color: #8E8E93; font-size: 13px; }
+        .map-list-item { background: #fff; padding: 16px; border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .map-list-icon { width: 40px; height: 40px; border-radius: 10px; background: #34C759; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 14px; flex-shrink: 0; }
+        .map-list-icon.food { background: #FF9500; }
+        .map-list-info { flex: 1; }
+        .map-list-title { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
+        .map-list-url { font-size: 12px; color: #C7C7CC; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .map-edit-btn { padding: 8px; color: #C7C7CC; }
 
+        /* FAB */
+        .fab { position: fixed; bottom: calc(var(--safe-bottom) + 80px); right: 20px; width: 56px; height: 56px; background: #1C1C1E; border-radius: 20px; color: white; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); z-index: 999; }
+
+        /* Tab Bar (Updated) */
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: var(--tab-height); background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 0.5px solid rgba(0,0,0,0.15); display: flex; justify-content: space-around; padding-top: 8px; z-index: 1000; padding-bottom: var(--safe-bottom); }
+        .tab-item { width: 20%; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #999; }
         .tab-item.active { color: var(--primary); }
-        .tab-icon { width: 26px; height: 26px; fill: currentColor; }
+        .tab-icon { width: 24px; height: 24px; fill: currentColor; }
 
-        /* --- Pages & Transitions --- */
-        .page { display: none; opacity: 0; transform: translateY(10px); transition: opacity 0.2s, transform 0.2s; }
-        .page.active { display: block; opacity: 1; transform: translateY(0); }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.2s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- Day Scroller --- */
-        .day-scroller {
-            display: flex;
-            overflow-x: auto;
-            gap: 12px;
-            padding: 5px 20px 15px;
-            scrollbar-width: none;
-            -webkit-overflow-scrolling: touch;
-        }
-        .day-scroller::-webkit-scrollbar { display: none; }
+        .day-scroller { display: flex; overflow-x: auto; gap: 10px; padding: 10px 20px; scrollbar-width: none; }
+        .day-chip { background: white; color: var(--text-sub); padding: 8px 16px; border-radius: 99px; font-size: 14px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.05); white-space: nowrap; }
+        .day-chip.active { background: #000; color: #fff; transform: scale(1.05); }
 
-        .day-chip {
-            background: white;
-            color: var(--text-sub);
-            padding: 8px 18px;
-            border-radius: 99px;
-            font-size: 14px;
-            font-weight: 600;
-            white-space: nowrap;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-            border: 1px solid transparent;
-            transition: all 0.2s;
-        }
-        .day-chip.active {
-            background: var(--text-main); /* 用黑色更有質感，或維持藍色 */
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            transform: scale(1.05);
-        }
-
-        /* --- Itinerary List --- */
-        .period-group { margin-bottom: 24px; }
-        .period-header {
-            display: flex;
-            align-items: center;
-            margin: 0 20px 10px;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-sub);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
+        .modal-overlay.show { display: flex; }
+        .modal-sheet { background: #fff; width: 100%; max-width: 600px; border-top-left-radius: 24px; border-top-right-radius: 24px; padding: 24px; padding-bottom: 50px; max-height: 90vh; overflow-y: auto; }
+        .form-row { display: flex; gap: 10px; margin-bottom: 16px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 14px; background: #F2F2F7; border: none; border-radius: 12px; font-size: 16px; outline: none; margin-bottom: 16px; }
+        .form-textarea { height: 80px; resize: none; }
+        .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; }
         
-        .trip-card {
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
-        }
-        .trip-img {
-            width: 64px; height: 64px;
-            border-radius: 12px;
-            background-color: #F2F2F7;
-            object-fit: cover;
-            flex-shrink: 0;
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
-        }
-        .trip-content { flex: 1; min-width: 0; }
-        .trip-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; color: var(--text-main); }
-        .trip-meta { font-size: 13px; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
-        .trip-note { 
-            font-size: 13px; 
-            color: #666; 
-            margin-top: 6px; 
-            background: #F9F9F9;
-            padding: 6px 10px;
-            border-radius: 8px;
-            display: inline-block;
-        }
-        
-        .btn-delete {
-            position: absolute;
-            top: 12px; right: 12px;
-            background: #E5E5EA;
-            border: none;
-            border-radius: 50%;
-            width: 24px; height: 24px;
-            color: #8E8E93;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 12px;
-        }
-
-        /* --- Empty State --- */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-sub);
-        }
-        .empty-icon {
-            width: 80px; height: 80px;
-            margin-bottom: 16px;
-            opacity: 0.3;
-            fill: currentColor;
-        }
-
-        /* --- FAB & Toast --- */
-        .fab {
-            position: fixed;
-            bottom: calc(var(--tab-height) + 24px);
-            right: 20px;
-            width: 56px; height: 56px;
-            background: var(--text-main); /* 黑色 FAB 更有設計感 */
-            border-radius: 20px;
-            color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-            z-index: 90;
-            transition: transform 0.2s;
-        }
-        .fab:active { transform: scale(0.9); }
-
-        .toast {
-            position: fixed;
-            top: 20px; left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 99px;
-            font-size: 14px;
-            font-weight: 600;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 300;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .toast.show {
-            transform: translateX(-50%) translateY(calc(var(--safe-top) + 10px));
-            opacity: 1;
-        }
-
-        /* --- Modal --- */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            z-index: 200;
-            display: none;
-            justify-content: center;
-            align-items: flex-end;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .modal-overlay.show { display: flex; opacity: 1; }
-        
-        .modal-sheet {
-            background: #fff;
-            width: 100%;
-            max-width: 600px;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            padding: 24px 20px 40px;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .modal-overlay.show .modal-sheet { transform: translateY(0); }
-
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 16px;
-            background: #F2F2F7;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-family: inherit;
-            margin-bottom: 16px;
-            color: var(--text-main);
-            outline: none;
-        }
-        .form-input:focus { background: #E5E5EA; }
-        .form-textarea { height: 100px; resize: none; }
-
-        /* --- Must Do List --- */
-        .mustdo-row {
-            display: flex;
-            align-items: center;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--divider);
-        }
-        .mustdo-row:last-child { border-bottom: none; }
-        .checkbox {
-            width: 24px; height: 24px;
-            border-radius: 50%;
-            border: 2px solid #C7C7CC;
-            margin-right: 14px;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-        }
-        .checkbox.checked {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-        .checkbox.checked::after { content: '✓'; color: #fff; font-size: 14px; font-weight: 800; }
-        .mustdo-text { font-size: 16px; transition: color 0.2s; }
-        .mustdo-text.done { color: #C7C7CC; text-decoration: line-through; }
-
+        #loading { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 3000; display: none; align-items: center; justify-content: center; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header-wrapper">
-        <div class="header-title" id="pageTitle">Hokkaido</div>
-        <div class="header-subtitle" id="pageSubtitle">Day 1 • 札幌市區</div>
-    </div>
+    <div id="loading">處理中...</div>
 
-    <div class="toast" id="toast">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        <span id="toastMsg">已儲存</span>
+    <div class="header-wrapper">
+        <div class="header-left">
+            <div class="header-title" id="pageTitle">Hokkaido</div>
+            <div class="header-subtitle" id="pageSubtitle">Day 1 • 行程</div>
+        </div>
+        <div class="settings-btn" onclick="openAddModal('settings_menu')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.58 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        </div>
     </div>
 
     <div id="page-itinerary" class="page active">
-        <div class="day-scroller" id="dayScroller">
-            </div>
-
-        <div id="itineraryContent" style="padding-bottom: 80px;">
-            </div>
-        
-        <div class="fab clickable" onclick="openAddModal('trip')">＋</div>
+        <div class="day-scroller" id="dayScroller"></div>
+        <div class="timeline-container" id="timelineContent"></div>
+        <div class="fab" onclick="openAddModal('trip')">＋</div>
     </div>
 
     <div id="page-mustdo" class="page">
-        <div class="section-title">我們的約定</div>
-        <div class="card">
-            <textarea id="coupleRules" class="form-textarea" style="background:transparent; padding:0; height:80px; margin:0;" placeholder="輸入你們的約法三章..."></textarea>
+        <div style="padding: 20px;">
+            <h3 style="margin-bottom:10px;">約法三章</h3>
+            <textarea id="coupleRules" class="form-textarea" style="background:#fff; height:100px;" placeholder="輸入約定..."></textarea>
+            <h3 style="margin:20px 0 10px;">必做清單</h3>
+            <div id="mustDoContainer"></div>
         </div>
-
-        <div class="section-title">必做清單</div>
-        <div class="card" id="mustDoContainer">
-            </div>
-        <div style="padding: 0 16px;">
-            <button class="btn clickable" style="background:#E5E5EA; color:#000;" onclick="openAddModal('mustdo')">＋ 新增項目</button>
-        </div>
+        <div class="fab" onclick="openAddModal('mustdo')">＋</div>
     </div>
 
-    <div id="page-hotels" class="page">
-        <div class="section-title">住宿資訊</div>
-        <div id="hotelList"></div>
-        <div class="fab clickable" onclick="openAddModal('hotel')">＋</div>
-    </div>
-
+    <div id="page-hotels" class="page"><div style="padding:20px;" id="hotelList"></div><div class="fab" onclick="openAddModal('hotel')">＋</div></div>
+    
     <div id="page-tickets" class="page">
-        <div class="section-title">電子票券 & 文件</div>
-        <div id="ticketList"></div>
-        <div class="fab clickable" onclick="openAddModal('ticket')">＋</div>
+        <div style="padding:20px;">
+            <h3 style="margin: 0 0 10px; font-size:14px; color:#8E8E93; text-transform:uppercase;">✈️ 航班資訊 (PDF)</h3>
+            <div id="flightList"></div>
+            <h3 style="margin: 30px 0 10px; font-size:14px; color:#8E8E93; text-transform:uppercase;">🎟 景點門票 & JR Pass</h3>
+            <div id="ticketList"></div>
+        </div>
+        <div class="fab" onclick="openAddModal('ticket_choice')">＋</div>
     </div>
 
-    <div id="page-settings" class="page">
-        <div class="section-title">資料備份</div>
-        <div class="card clickable" onclick="exportData()" style="display:flex; justify-content:space-between; align-items:center;">
-            <span>📤 匯出行程 (複製代碼)</span>
-            <span style="color:#C7C7CC">›</span>
-        </div>
-        <div class="card clickable" onclick="importData()" style="display:flex; justify-content:space-between; align-items:center;">
-            <span>📥 匯入行程 (貼上代碼)</span>
-            <span style="color:#C7C7CC">›</span>
-        </div>
-        
-        <div class="section-title">重置</div>
-        <div class="card clickable" onclick="resetAllData()" style="color:var(--destructive); display:flex; justify-content:space-between; align-items:center;">
-            <span>🗑 刪除所有資料</span>
-        </div>
-        
-        <div style="text-align:center; color:#C7C7CC; font-size:12px; margin-top:30px;">
-            Designed for You<br>Hokkaido Trip V2.0
+    <div id="page-map" class="page">
+        <div style="padding: 20px;">
+            <div class="map-hero-btn" onclick="openCurrentLocation()">
+                <div class="map-hero-left">
+                    <div class="map-hero-icon">📍</div>
+                    <div class="map-hero-text"><h3>我現在在哪？</h3><p>開啟 Google Maps 定位</p></div>
+                </div>
+                <div style="color:#C7C7CC;">›</div>
+            </div>
+            <h3 style="margin: 30px 0 15px; font-size:14px; color:#8E8E93; text-transform:uppercase;">我的自訂地圖</h3>
+            <div id="mapListContainer"></div>
+            <p style="color:#8E8E93; font-size:12px; margin-top:20px; line-height:1.5;">💡 點擊上方清單，直接開啟 Google Maps 圖層。</p>
         </div>
     </div>
 
     <nav class="tab-bar">
-        <div class="tab-item active clickable" onclick="switchTab('itinerary')">
-            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-            <span>行程</span>
-        </div>
-        <div class="tab-item clickable" onclick="switchTab('mustdo')">
-            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
-            <span>清單</span>
-        </div>
-        <div class="tab-item clickable" onclick="switchTab('hotels')">
-            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>
-            <span>住宿</span>
-        </div>
-        <div class="tab-item clickable" onclick="switchTab('tickets')">
-            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/></svg>
-            <span>票券</span>
-        </div>
-        <div class="tab-item clickable" onclick="switchTab('settings')">
-            <svg class="tab-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.58 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-            <span>設定</span>
-        </div>
+        <div class="tab-item active" onclick="switchTab('itinerary')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg><span>行程</span></div>
+        <div class="tab-item" onclick="switchTab('mustdo')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M14 17H4v2h10v-2zm6-8H4v2h16V9zM4 15h16v-2H4v2zM4 5v2h16V5H4z"/></svg><span>清單</span></div>
+        <div class="tab-item" onclick="switchTab('hotels')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg><span>住宿</span></div>
+        <div class="tab-item" onclick="switchTab('tickets')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M13 13l-3-2.25L7 13V4H6v16h12V4h-1v9zM3 20h18v2H3v-2z"/></svg><span>票券</span></div>
+        <div class="tab-item" onclick="switchTab('map')"><svg class="tab-icon" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg><span>地圖</span></div>
     </nav>
 
     <div class="modal-overlay" id="addModal" onclick="if(event.target===this) closeModal()">
         <div class="modal-sheet">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 id="modalTitle" style="margin:0; font-size:20px;">新增</h3>
-                <button class="btn-text clickable" style="font-weight:600; color:#C7C7CC;" onclick="closeModal()">取消</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3 id="modalTitle" style="margin:0;">新增</h3>
+                <span onclick="closeModal()" style="color:#999; cursor:pointer;">取消</span>
             </div>
             <div id="modalBody"></div>
-            <button class="btn clickable" id="modalSaveBtn" style="margin-top:20px;">儲存</button>
+            <button class="btn" id="modalSaveBtn">儲存</button>
         </div>
     </div>
 
     <script>
         const DAYS = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6'];
         const PERIODS = ['morning', 'afternoon', 'evening'];
-        const STORAGE_KEY = 'hokkaido_v2_pro';
+        const PERIOD_LABEL = { morning: '早安 Morning', afternoon: '午安 Afternoon', evening: '晚安 Evening' };
+        const STORAGE_KEY = 'hokkaido_v7_final';
 
-        let appData = {
-            activeDay: 'Day 1',
-            mustDo: [
-                { id: 1, text: '在新千歲機場吃拉麵', done: false },
-                { id: 2, text: '和男友在雪地合照', done: false }
-            ],
-            coupleRules: '',
-            itinerary: {},
-            hotels: [],
-            tickets: []
+        let appData = { 
+            activeDay: 'Day 1', mustDo: [], coupleRules: '', itinerary: {}, hotels: [], tickets: [], flights: [],
+            maps: [
+                { name: '北海道景點', url: 'https://maps.app.goo.gl/YCiJYAw3ZDBpatnp9', type: 'place' },
+                { name: '北海道美食', url: 'https://maps.app.goo.gl/E8PcCWDnZKVuzN618', type: 'food' }
+            ]
         };
 
-        // --- Init ---
         function init() {
-            DAYS.forEach(day => {
-                if (!appData.itinerary[day]) appData.itinerary[day] = { morning: [], afternoon: [], evening: [] };
-            });
-
+            DAYS.forEach(d => { if(!appData.itinerary[d]) appData.itinerary[d] = { morning:[], afternoon:[], evening:[] }; });
             const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try { appData = { ...appData, ...JSON.parse(saved) }; } catch(e) {}
-            }
+            if(saved) { try { appData = { ...appData, ...JSON.parse(saved) }; } catch(e){} }
+            
+            // Init Checks
+            if (!appData.flights) appData.flights = [];
+            if (!appData.maps || appData.maps.length === 0) appData.maps = [
+                { name: '北海道景點', url: 'https://maps.app.goo.gl/YCiJYAw3ZDBpatnp9', type: 'place' },
+                { name: '北海道美食', url: 'https://maps.app.goo.gl/E8PcCWDnZKVuzN618', type: 'food' }
+            ];
 
-            renderDayScroller();
-            renderItinerary();
-            renderMustDo();
-            renderHotels();
-            renderTickets();
+            renderDayScroller(); renderTimeline(); renderOthers(); renderMaps();
             
             document.getElementById('coupleRules').value = appData.coupleRules || '';
-            document.getElementById('coupleRules').addEventListener('input', (e) => {
-                appData.coupleRules = e.target.value;
-                saveData();
+            document.getElementById('coupleRules').addEventListener('input', e => {
+                appData.coupleRules = e.target.value; saveData();
             });
         }
+        function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
 
-        function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
-        }
-
-        // --- Navigation ---
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.tab-item[onclick="switchTab('${tab}')"]`).classList.add('active');
-            
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
-            document.getElementById(`page-${tab}`).classList.add('active');
-
-            const titles = { itinerary: 'Hokkaido', mustdo: 'Checklist', hotels: 'Hotels', tickets: 'Wallet', settings: 'Settings' };
-            const subs = { itinerary: `${appData.activeDay} • 行程`, mustdo: '必做清單 & 約定', hotels: '住宿憑證', tickets: '票券管理', settings: '系統設定' };
-            
-            document.getElementById('pageTitle').innerText = titles[tab];
-            document.getElementById('pageSubtitle').innerText = subs[tab];
-        }
-
-        // --- Itinerary ---
-        function renderDayScroller() {
-            const c = document.getElementById('dayScroller');
-            c.innerHTML = '';
-            DAYS.forEach(day => {
-                const d = document.createElement('div');
-                d.className = `day-chip clickable ${appData.activeDay === day ? 'active' : ''}`;
-                d.innerText = day;
-                d.onclick = () => {
-                    appData.activeDay = day;
-                    saveData();
-                    renderDayScroller();
-                    renderItinerary();
-                    document.getElementById('pageSubtitle').innerText = `${day} • 行程`;
-                };
-                c.appendChild(d);
-            });
-        }
-
-        function renderItinerary() {
-            const container = document.getElementById('itineraryContent');
-            container.innerHTML = '';
+        // --- Core Render ---
+        function renderTimeline() {
+            const container = document.getElementById('timelineContent'); container.innerHTML = '';
             const dayData = appData.itinerary[appData.activeDay];
-
-            const pMap = { morning: '早上', afternoon: '下午', evening: '晚上' };
-
+            let hasItem = false;
             PERIODS.forEach(p => {
-                const group = document.createElement('div');
-                group.className = 'period-group';
-                group.innerHTML = `<div class="period-header">${pMap[p]}</div>`;
-                
-                const list = document.createElement('div');
-                list.className = 'period-list';
-                
-                if (dayData[p].length === 0) {
-                    list.innerHTML = `
-                        <div style="margin:0 20px; padding:15px; border:1px dashed #E5E5EA; border-radius:16px; color:#C7C7CC; font-size:14px; text-align:center;">
-                           + 新增行程
-                        </div>`;
-                    list.onclick = () => openAddModal('trip');
-                } else {
-                    dayData[p].forEach((item, idx) => {
-                        const card = document.createElement('div');
-                        card.className = 'card trip-card clickable';
-                        card.innerHTML = `
-                            <img src="${item.image || 'https://via.placeholder.com/100?text=IMG'}" class="trip-img">
-                            <div class="trip-content">
-                                <div class="trip-title">${item.title}</div>
-                                <div class="trip-meta">
-                                    <span style="background:#F2F2F7; padding:2px 6px; border-radius:4px; font-weight:600; font-size:11px;">${item.time || '未定'}</span>
-                                    ${item.mapUrl ? '<span>📍 Map</span>' : ''}
-                                </div>
-                                ${item.note ? `<div class="trip-note">${item.note}</div>` : ''}
-                            </div>
-                            <button class="btn-delete clickable" onclick="event.stopPropagation(); deleteItem('itinerary', '${p}', ${idx})">✕</button>
-                        `;
-                        // 點擊卡片開啟 Map
-                        if(item.mapUrl) {
-                            card.onclick = () => window.open(item.mapUrl);
-                        }
-                        list.appendChild(card);
+                let items = dayData[p] || [];
+                items.sort((a, b) => { if (!a.hh) return 1; if (!b.hh) return -1; return (a.hh * 60 + parseInt(a.mm)) - (b.hh * 60 + parseInt(b.mm)); });
+                if (items.length > 0) {
+                    hasItem = true;
+                    const group = document.createElement('div'); group.className = 'period-section';
+                    group.innerHTML = `<div class="period-label">${PERIOD_LABEL[p]}</div>`;
+                    items.forEach((item, idx) => {
+                        let mapLink = item.mapUrl || (item.title ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}` : '');
+                        const timeDisplay = (item.hh && item.mm) ? `${item.hh}:${item.mm}` : '';
+                        const imgHtml = item.image ? `<img src="${item.image}" class="card-img" loading="lazy">` : '';
+                        const cardClass = item.image ? 'card' : 'card no-img';
+                        group.innerHTML += `
+                            <div class="timeline-item">
+                                <div class="time-column ${timeDisplay ? '' : 'no-time'}">${timeDisplay || '--:--'}</div>
+                                <div class="timeline-axis"></div><div class="timeline-dot"></div>
+                                <div class="card-column"><div class="${cardClass}">
+                                    ${imgHtml}<div class="card-content"><div class="card-title">${item.title}</div>${item.note ? `<div class="card-note">${item.note}</div>` : ''}</div>
+                                    <button class="btn-delete" onclick="deleteTrip('${p}', ${idx})">✕</button>
+                                    <div class="map-btn" onclick="openMap('${mapLink}')"><svg class="map-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div>
+                                </div></div>
+                            </div>`;
                     });
+                    container.appendChild(group);
                 }
-                group.appendChild(list);
-                container.appendChild(group);
-
-                new Sortable(list, { group: 'shared', animation: 150, ghostClass: 'sortable-ghost' });
             });
+            if(!hasItem) container.innerHTML = `<div style="text-align:center; color:#ccc; margin-top:50px;">還沒有行程<br>點擊右下角 ＋ 新增</div>`;
         }
 
-        // --- Must Do ---
-        function renderMustDo() {
-            const c = document.getElementById('mustDoContainer');
-            c.innerHTML = '';
-            if(appData.mustDo.length === 0) {
-                c.innerHTML = `<div class="empty-state">尚未新增任何項目</div>`;
-                return;
-            }
-            appData.mustDo.forEach((item, idx) => {
-                const row = document.createElement('div');
-                row.className = 'mustdo-row clickable';
-                row.innerHTML = `
-                    <div class="checkbox ${item.done ? 'checked' : ''}"></div>
-                    <div class="mustdo-text ${item.done ? 'done' : ''}" style="flex:1;">${item.text}</div>
-                    <button class="btn-text" style="color:#C7C7CC;" onclick="event.stopPropagation(); deleteItem('mustdo', null, ${idx})">✕</button>
-                `;
-                row.onclick = () => {
-                    item.done = !item.done;
-                    saveData();
-                    renderMustDo();
-                };
-                c.appendChild(row);
-            });
-        }
-
-        // --- Hotels & Tickets ---
-        function renderHotels() {
-            const c = document.getElementById('hotelList');
-            c.innerHTML = '';
-            if(appData.hotels.length === 0) {
-                c.innerHTML = getEmptyStateHTML('尚無住宿資料');
-                return;
-            }
-            appData.hotels.forEach((h, idx) => {
-                const card = document.createElement('div');
-                card.className = 'card clickable';
-                card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-weight:700; font-size:18px;">${h.name}</span>
-                        <button class="btn-delete clickable" onclick="deleteItem('hotels', null, ${idx})">✕</button>
-                    </div>
-                    <div style="color:#8E8E93; font-size:14px; margin-bottom:12px;">📅 ${h.date}</div>
-                    ${h.file ? `<button class="btn" style="height:40px; font-size:14px; background:#F2F2F7; color:var(--primary);" onclick="openFile('${h.file}')">📄 查看憑證</button>` : ''}
-                `;
-                c.appendChild(card);
-            });
-        }
-
-        function renderTickets() {
-            const c = document.getElementById('ticketList');
-            c.innerHTML = '';
-            if(appData.tickets.length === 0) {
-                c.innerHTML = getEmptyStateHTML('尚無票券');
-                return;
-            }
-            appData.tickets.forEach((t, idx) => {
-                const card = document.createElement('div');
-                card.className = 'card clickable';
-                card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-weight:700; font-size:18px;">${t.name}</span>
-                        <button class="btn-delete clickable" onclick="deleteItem('tickets', null, ${idx})">✕</button>
-                    </div>
-                    <div style="color:#8E8E93; font-size:14px; margin-bottom:12px;">🕒 ${t.time}</div>
-                    ${t.file ? `<button class="btn" style="height:40px; font-size:14px; background:#E5F4FF; color:var(--primary);" onclick="openFile('${t.file}')">🎟 開啟票券</button>` : ''}
-                `;
-                c.appendChild(card);
-            });
-        }
-
-        function getEmptyStateHTML(text) {
-            return `
-                <div class="empty-state">
-                    <svg class="empty-icon" viewBox="0 0 24 24"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/></svg>
-                    <div>${text}</div>
-                </div>
-            `;
-        }
-
-        // --- Core Actions ---
-        function deleteItem(type, p, idx) {
-            // 不使用 confirm, 直接刪除但提供 undo (這裡簡化為直接刪除+Toast)
-            // 更像 App 的做法通常是 Swipe to delete，但這裡用簡單的點擊
-            if (type === 'itinerary') appData.itinerary[appData.activeDay][p].splice(idx, 1);
-            else if (type === 'mustdo') appData.mustDo.splice(idx, 1);
-            else appData[type].splice(idx, 1);
+        function renderOthers() {
+            const mc = document.getElementById('mustDoContainer'); mc.innerHTML = '';
+            appData.mustDo.forEach((m, i) => mc.innerHTML += `<div style="background:#fff; padding:16px; margin-bottom:8px; border-radius:12px; display:flex;" onclick="toggleMustDo(${i})"><span style="flex:1; text-decoration:${m.done?'line-through':''}; color:${m.done?'#ccc':'#000'}">${m.text}</span><span style="color:#ccc;" onclick="event.stopPropagation(); deleteOther('mustDo', ${i})">✕</span></div>`);
             
-            saveData();
-            refreshAll();
-            showToast('已刪除');
+            const renderSimple = (id, type) => {
+                const el = document.getElementById(id); el.innerHTML = '';
+                appData[type].forEach((x, i) => el.innerHTML += `<div style="background:#fff; padding:16px; border-radius:16px; margin-bottom:12px; position:relative;"><div style="font-weight:bold;">${x.name}</div><div style="color:#888; font-size:13px; margin:4px 0;">${x.date||x.time}</div>${x.file ? `<button onclick="openFile('${x.file}')" style="margin-top:8px; padding:6px 12px; border:1px solid #eee; background:#fff; color:#007AFF; border-radius:8px;">查看憑證</button>` : ''}<button onclick="deleteOther('${type}', ${i})" style="position:absolute; top:16px; right:16px; border:none; background:transparent; color:#ccc;">✕</button></div>`);
+            };
+            renderSimple('hotelList', 'hotels'); renderSimple('ticketList', 'tickets');
+
+            const fc = document.getElementById('flightList'); fc.innerHTML = '';
+            appData.flights.forEach((f, i) => fc.innerHTML += `<div class="flight-card"><div class="flight-header"><span class="flight-no">✈ ${f.no}</span><span class="flight-date">${f.date}</span></div><div class="flight-body"><div style="text-align:center;"><div class="airport-code">${f.dep}</div><div class="flight-time">${f.depTime}</div></div><div class="flight-arrow">➝</div><div style="text-align:center;"><div class="airport-code">${f.arr}</div><div class="flight-time">${f.arrTime}</div></div></div><div class="flight-footer">${f.file ? `<div class="ticket-btn" onclick="openFile('${f.file}')">開啟機票 (PDF)</div>` : ''}<div class="ticket-btn" style="color:#FF3B30; flex:0.3;" onclick="deleteOther('flights', ${i})">✕</div></div></div>`);
         }
 
-        function refreshAll() {
-            renderItinerary();
-            renderMustDo();
-            renderHotels();
-            renderTickets();
+        function renderMaps() {
+            const container = document.getElementById('mapListContainer'); container.innerHTML = '';
+            appData.maps.forEach((m, idx) => {
+                const icon = m.type === 'food' ? '🍜' : '🗺️';
+                const cls = m.type === 'food' ? 'map-list-icon food' : 'map-list-icon';
+                container.innerHTML += `<div class="map-list-item" onclick="openMap('${m.url}')"><div class="${cls}">${icon}</div><div class="map-list-info"><div class="map-list-title">${m.name}</div><div class="map-list-url">${m.url}</div></div><div class="map-edit-btn" onclick="event.stopPropagation(); openAddModal('edit_map', ${idx})">✎</div></div>`;
+            });
+        }
+
+        // --- Logic & Actions ---
+        function switchTab(t) {
+            document.querySelectorAll('.tab-item').forEach(e=>e.classList.remove('active'));
+            document.querySelector(`.tab-item[onclick="switchTab('${t}')"]`).classList.add('active');
+            document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+            document.getElementById(`page-${t}`).classList.add('active');
+            
+            const titles = { itinerary:'Hokkaido', mustdo:'Checklist', hotels:'Hotels', tickets:'Wallet', map:'Map' };
+            const subs = { itinerary:`${appData.activeDay} • 行程`, mustdo:'必做', hotels:'住宿', tickets:'票券夾', map:'地圖指揮中心' };
+            document.getElementById('pageTitle').innerText = titles[t];
+            document.getElementById('pageSubtitle').innerText = subs[t];
+        }
+        function renderDayScroller() {
+            const c = document.getElementById('dayScroller'); c.innerHTML = '';
+            DAYS.forEach(d => {
+                const el = document.createElement('div'); el.className = `day-chip ${appData.activeDay===d?'active':''}`;
+                el.innerText = d; el.onclick = () => { appData.activeDay = d; saveData(); renderDayScroller(); renderTimeline(); document.getElementById('pageSubtitle').innerText = `${d} • 行程`; };
+                c.appendChild(el);
+            });
+        }
+
+        function deleteTrip(p, i) { if(confirm('刪除？')) { appData.itinerary[appData.activeDay][p].splice(i,1); saveData(); renderTimeline(); }}
+        function deleteOther(t, i) { if(confirm('刪除？')) { appData[t].splice(i,1); saveData(); renderOthers(); }}
+        function toggleMustDo(i) { appData.mustDo[i].done = !appData.mustDo[i].done; saveData(); renderOthers(); }
+        function openMap(u) { window.open(u, '_blank'); }
+        function openFile(u) { const w = window.open(); w.document.write(`<iframe src="${u}" style="width:100%;height:100%;border:0;"></iframe>`); }
+        function openCurrentLocation() { window.open('https://www.google.com/maps', '_blank'); }
+
+        // --- Helpers: Image & PDF ---
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+                        const MAX_WIDTH = 600; const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = (img.width > MAX_WIDTH) ? MAX_WIDTH : img.width;
+                        canvas.height = (img.width > MAX_WIDTH) ? img.height * scaleSize : img.height;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height); resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                }; reader.readAsDataURL(file);
+            });
+        }
+        function readPdf(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result); // PDF 直接存 Base64，不壓縮
+                reader.readAsDataURL(file);
+            });
         }
 
         // --- Modal ---
-        let currType = '';
-        function openAddModal(type) {
-            currType = type;
-            const titles = { trip: '新增行程', mustdo: '新增必做', hotel: '新增住宿', ticket: '新增票券' };
-            document.getElementById('modalTitle').innerText = titles[type];
-            
-            let html = '';
-            if (type === 'trip') {
-                html = `
-                    <select id="inpPeriod" class="form-select">
-                        <option value="morning">早上</option>
-                        <option value="afternoon">下午</option>
-                        <option value="evening">晚上</option>
-                    </select>
-                    <input id="inpTitle" class="form-input" placeholder="景點名稱 (例: 小樽運河)">
-                    <input id="inpTime" class="form-input" type="time">
-                    <input id="inpMap" class="form-input" placeholder="Google Maps 連結 (選填)">
-                    <textarea id="inpNote" class="form-textarea" placeholder="備註 (必吃、交通...)"></textarea>
-                `;
-            } else if (type === 'mustdo') {
-                html = `<input id="inpTitle" class="form-input" placeholder="事項名稱">`;
-            } else {
-                html = `
-                    <input id="inpTitle" class="form-input" placeholder="名稱">
-                    <input id="inpTime" class="form-input" placeholder="${type==='hotel'?'日期 (2/14)':'時間 (10:00)'}">
-                    <div style="margin-bottom:10px; font-size:14px; color:#888;">上傳附件 (圖片/PDF)</div>
-                    <input id="inpFile" type="file" class="form-input">
-                `;
+        let currType = ''; let editIdx = -1;
+        function openAddModal(type, idx = -1) {
+            currType = type; editIdx = idx;
+            const b = document.getElementById('modalBody'); const title = document.getElementById('modalTitle');
+            const saveBtn = document.getElementById('modalSaveBtn'); saveBtn.style.display = 'block';
+
+            if (type === 'settings_menu') {
+                title.innerText = "設定";
+                b.innerHTML = `<button class="btn" onclick="exportData()" style="margin-bottom:12px; background:#fff; color:#000; border:1px solid #eee;">📤 匯出行程 (複製代碼)</button><button class="btn" onclick="importData()" style="margin-bottom:12px; background:#fff; color:#000; border:1px solid #eee;">📥 匯入行程 (貼上代碼)</button><button class="btn" onclick="resetAllData()" style="background:#FF3B30; color:#fff;">🗑 清空所有資料</button><div style="text-align:center; margin-top:20px; font-size:12px; color:#ccc;">Hokkaido App V7.0</div>`;
+                saveBtn.style.display = 'none';
+            } else if (type === 'ticket_choice') {
+                title.innerText = "選擇類型";
+                b.innerHTML = `<button class="btn" onclick="openAddModal('flight')" style="margin-bottom:10px; background:#E5F4FF; color:#007AFF;">✈️ 新增航班</button><button class="btn" onclick="openAddModal('ticket')" style="background:#F2F2F7; color:#000;">🎟 新增門票 / 交通票</button>`;
+                saveBtn.style.display = 'none';
+            } else if (type === 'edit_map') {
+                title.innerText = "編輯地圖";
+                const m = appData.maps[idx];
+                b.innerHTML = `<input id="inpTitle" class="form-input" value="${m.name}" placeholder="地圖名稱"><input id="inpMap" class="form-input" value="${m.url}" placeholder="URL">`;
+            } else if (type === 'trip') {
+                title.innerText = "新增行程";
+                let hOpts = '<option value="">-時-</option>'; for(let i=6;i<=23;i++) hOpts+=`<option value="${i.toString().padStart(2,'0')}">${i}</option>`;
+                b.innerHTML = `<select id="inpPeriod" class="form-select"><option value="morning">Morning</option><option value="afternoon">Afternoon</option><option value="evening">Evening</option></select><div class="form-row"><select id="inpHH" class="form-select">${hOpts}</select><select id="inpMM" class="form-select"><option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option></select></div><input id="inpTitle" class="form-input" placeholder="景點名稱 *"><input id="inpMap" class="form-input" placeholder="Map 連結 (選填)"><div style="font-size:14px;color:#666;margin-bottom:6px;">封面照片 (選填)</div><input id="inpImg" type="file" accept="image/*" class="form-input"><textarea id="inpNote" class="form-textarea" placeholder="備註..."></textarea>`;
+            } else if (type === 'flight') {
+                title.innerText = "新增航班";
+                b.innerHTML = `<input id="inpNo" class="form-input" placeholder="航班代號 (JX801)"><input id="inpDate" class="form-input" placeholder="日期 (2/14)"><div class="form-row"><input id="inpDep" class="form-input" placeholder="出發 (TPE)"><input id="inpDepTime" class="form-input" placeholder="時間 (10:00)"></div><div class="form-row"><input id="inpArr" class="form-input" placeholder="抵達 (CTS)"><input id="inpArrTime" class="form-input" placeholder="時間 (15:00)"></div><div style="font-size:14px;color:#666;margin-bottom:6px;">上傳電子機票 (PDF)</div><input id="inpFile" type="file" accept="application/pdf" class="form-input">`;
+            } else { 
+                title.innerText = "新增";
+                b.innerHTML = type === 'mustdo' ? `<input id="inpTitle" class="form-input" placeholder="事項">` : `<input id="inpTitle" class="form-input" placeholder="名稱"><input id="inpTime" class="form-input" placeholder="時間/日期"><input id="inpFile" type="file" class="form-input">`; 
             }
-            document.getElementById('modalBody').innerHTML = html;
             document.getElementById('addModal').classList.add('show');
         }
-
-        function closeModal() {
-            document.getElementById('addModal').classList.remove('show');
-        }
+        function closeModal() { document.getElementById('addModal').classList.remove('show'); }
 
         document.getElementById('modalSaveBtn').onclick = async () => {
-            const title = document.getElementById('inpTitle').value;
-            if(!title) return;
-
-            let fileData = null;
-            const fInput = document.getElementById('inpFile');
-            if(fInput && fInput.files[0]) {
-                const reader = new FileReader();
-                fileData = await new Promise(r => {
-                    reader.onload = e => r(e.target.result);
-                    reader.readAsDataURL(fInput.files[0]);
-                });
-            }
-
-            if(currType === 'trip') {
+            const loading = document.getElementById('loading'); loading.style.display = 'flex';
+            if (currType === 'edit_map') {
+                appData.maps[editIdx].name = document.getElementById('inpTitle').value;
+                appData.maps[editIdx].url = document.getElementById('inpMap').value;
+                renderMaps();
+            } else if(currType === 'trip') {
+                const title = document.getElementById('inpTitle').value;
+                if(!title) { alert('請輸入名稱'); loading.style.display='none'; return; }
+                let imgData = null; const imgInput = document.getElementById('inpImg');
+                if(imgInput && imgInput.files[0]) imgData = await compressImage(imgInput.files[0]);
                 appData.itinerary[appData.activeDay][document.getElementById('inpPeriod').value].push({
-                    title, time: document.getElementById('inpTime').value,
-                    mapUrl: document.getElementById('inpMap').value,
-                    note: document.getElementById('inpNote').value
-                });
-            } else if (currType === 'mustdo') {
-                appData.mustDo.push({ id: Date.now(), text: title, done: false });
+                    title, hh: document.getElementById('inpHH').value, mm: document.getElementById('inpMM').value,
+                    mapUrl: document.getElementById('inpMap').value, note: document.getElementById('inpNote').value, image: imgData
+                }); renderTimeline();
+            } else if (currType === 'flight') {
+                const no = document.getElementById('inpNo').value;
+                if(!no) { alert('請輸入航班代號'); loading.style.display='none'; return; }
+                let fData = null; const fInput = document.getElementById('inpFile');
+                if(fInput && fInput.files[0]) fData = await readPdf(fInput.files[0]); // 使用 PDF 讀取邏輯
+                appData.flights.push({
+                    no, date: document.getElementById('inpDate').value,
+                    dep: document.getElementById('inpDep').value, depTime: document.getElementById('inpDepTime').value,
+                    arr: document.getElementById('inpArr').value, arrTime: document.getElementById('inpArrTime').value, file: fData
+                }); renderOthers();
+            } else if(currType === 'mustdo') {
+                appData.mustDo.push({text:document.getElementById('inpTitle').value, done:false}); renderOthers();
             } else {
-                appData[currType+'s'].push({
-                    name: title,
-                    [currType==='hotel'?'date':'time']: document.getElementById('inpTime').value,
-                    file: fileData
-                });
+                let fData = null; const fInput = document.getElementById('inpFile');
+                if(fInput && fInput.files[0]) fData = await compressImage(fInput.files[0]);
+                appData[currType+'s'].push({name:document.getElementById('inpTitle').value, [currType==='hotel'?'date':'time']:document.getElementById('inpTime').value, file:fData});
+                renderOthers();
             }
-            
-            saveData();
-            refreshAll();
-            closeModal();
-            showToast('新增成功');
+            saveData(); loading.style.display = 'none'; closeModal();
         };
 
-        function openFile(url) {
-            const win = window.open();
-            win.document.write(`<iframe src="${url}" style="border:0; width:100%; height:100%;"></iframe>`);
-        }
-
-        function resetAllData() {
-            if(confirm('警告：確定要清空所有資料嗎？')) {
-                localStorage.removeItem(STORAGE_KEY);
-                location.reload();
-            }
-        }
-        
-        function exportData() {
-            navigator.clipboard.writeText(JSON.stringify(appData));
-            showToast('代碼已複製');
-        }
-        
-        function importData() {
-            const code = prompt('請貼上代碼');
-            if(code) {
-                try {
-                    appData = JSON.parse(code);
-                    saveData();
-                    refreshAll();
-                    showToast('匯入成功');
-                } catch(e) { alert('格式錯誤'); }
-            }
-        }
+        function exportData() { navigator.clipboard.writeText(JSON.stringify(appData)); alert('已複製資料代碼'); }
+        function importData() { const c = prompt('貼上代碼'); if(c) { try { appData = JSON.parse(c); saveData(); location.reload(); } catch(e){ alert('錯誤'); } } }
+        function resetAllData() { if(confirm('確定清空？')) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
 
         init();
     </script>
