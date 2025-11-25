@@ -35,7 +35,7 @@
     .app {
       max-width: 980px;
       margin: 0 auto;
-      padding: 12px 12px 90px;
+      padding: 10px 10px 90px;
     }
 
     header {
@@ -54,7 +54,7 @@
       margin: 0;
       font-size: 12px;
       color: var(--text-sub);
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
     .toolbar {
@@ -87,7 +87,76 @@
       transform: translateY(-1px);
     }
 
-    /* Board layout：簡化陰影，手機優先 */
+    /* 顶部：必做清單 & 約法 */
+    .top-panel {
+      margin-top: 8px;
+      margin-bottom: 10px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 720px) {
+      .top-panel {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card-simple {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+    }
+
+    .card-simple h2 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .mustdo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .mustdo-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mustdo-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+    }
+
+    .mustdo-label {
+      flex: 1;
+    }
+
+    .mustdo-label.done {
+      text-decoration: line-through;
+      color: var(--text-sub);
+    }
+
+    .rules-textarea {
+      width: 100%;
+      min-height: 80px;
+      resize: vertical;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+
+    /* Board layout：APP 風格 */
     .board-wrapper {
       background: transparent;
       padding: 4px 0 8px;
@@ -461,19 +530,6 @@
       padding: 8px;
     }
 
-    .tips {
-      margin-top: 4px;
-      font-size: 11px;
-      color: var(--text-sub);
-      line-height: 1.5;
-    }
-
-    .io-helper {
-      font-size: 11px;
-      color: var(--text-sub);
-      margin-top: 6px;
-    }
-
     /* Toast */
     .toast {
       position: fixed;
@@ -508,13 +564,12 @@
       font-size: 16px;
     }
 
-    /* 下方：機票 & 飯店資訊區塊 */
+    /* 下方：機票 & 飯店 & 門票資訊區塊 */
     .info-panel {
       margin-top: 10px;
-      background: var(--surface);
+      background: transparent;
       border-radius: var(--radius-lg);
-      padding: 10px;
-      border: 1px solid #e5e7eb;
+      padding: 0;
     }
 
     .info-panel-title {
@@ -523,28 +578,32 @@
       margin: 0 0 6px;
     }
 
-    .info-panel-desc {
-      font-size: 11px;
-      color: var(--text-sub);
-      margin-bottom: 6px;
-    }
-
     .info-grid {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       gap: 10px;
     }
 
+    @media (min-width: 720px) {
+      .info-grid {
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+    }
+
     .info-card {
-      border-radius: 14px;
-      padding: 8px;
-      background: #f9fafb;
+      border-radius: 16px;
+      padding: 10px;
+      background: var(--surface);
       border: 1px solid #e5e7eb;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
     }
 
     .info-card h3 {
       margin: 0 0 6px;
       font-size: 13px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
     }
 
     .info-textarea {
@@ -570,8 +629,12 @@
       color: var(--text-sub);
     }
 
-    .info-field input[type="file"] {
+    .info-field input[type="file"],
+    .info-field input[type="url"] {
       font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
     }
 
     .pdf-status {
@@ -599,18 +662,45 @@
       background: #e5e7eb;
     }
 
-    @media (min-width: 720px) {
-      .info-grid {
-        grid-template-columns: 1.1fr 0.9fr;
-      }
+    .pass-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-sub);
     }
 
-    /* Mobile tweaks */
-    @media (max-width: 768px) {
-      .app {
-        padding: 10px 10px 90px;
-      }
+    .pass-item {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
 
+    .pass-name {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pass-delete-btn {
+      border: none;
+      background: transparent;
+      color: #9ca3af;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tips {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    @media (max-width: 768px) {
       .board {
         min-width: 100%;
       }
@@ -630,7 +720,7 @@
   <div class="app">
     <header>
       <h1>北海道行程看板</h1>
-      <p>Day1～Day6 行程，小卡片整理景點；最下方可記錄機票與住宿資訊，方便手機隨時查看。</p>
+      <p>像 APP 一樣的個人行程板：上方是必做清單與約法、中間是每天行程、小卡片，下方集中機票 / 住宿 / 門票資訊。</p>
 
       <div class="toolbar">
         <button class="toolbar-btn" id="exportBtn" type="button">
@@ -642,23 +732,37 @@
       </div>
     </header>
 
+    <!-- 旅行必做清單 + 情侶約法 -->
+    <section class="top-panel">
+      <section class="card-simple">
+        <h2>✅ 旅行必做！！清單</h2>
+        <div id="mustDoList" class="mustdo-list"></div>
+      </section>
+
+      <section class="card-simple">
+        <h2>🤍 行前情侶約法三章</h2>
+        <textarea
+          id="coupleRulesTextarea"
+          class="rules-textarea"
+          placeholder="可以寫下彼此的約定，例如：&#10;1. 出國不翻舊帳，有情緒先說想冷靜一下&#10;2. 迷路時先一起找路，不責怪對方&#10;3. 拍照時互相配合，每天至少 3 張合照"
+        ></textarea>
+      </section>
+    </section>
+
+    <!-- 行程看板 -->
     <div class="board-wrapper" id="boardWrapper">
       <div class="board" id="board">
         <!-- JS 產生 Day 1~Day 6 -->
       </div>
     </div>
 
-    <!-- 下方：機票 PDF & 住宿資訊 -->
+    <!-- 下方：機票 / 住宿 / 門票 -->
     <section class="info-panel">
       <h2 class="info-panel-title">旅程重要資訊</h2>
-      <p class="info-panel-desc">
-        建議先把去程 / 回程班機、行李額度與各晚住宿名稱放在這裡，出門只要打開這一頁就能快速確認。
-      </p>
 
       <div class="info-grid">
         <section class="info-card">
           <h3>✈️ 機票資訊</h3>
-
           <textarea
             id="flightInfoTextarea"
             class="info-textarea"
@@ -681,15 +785,38 @@
             class="info-textarea"
             placeholder="例如：&#10;Day1：札幌 ○○ 飯店（近大通站 3 號出口）&#10;Day2：小樽 ○○ 旅館（含早餐）&#10;Day3：洞爺湖 ○○ 溫泉飯店（19:00 晚餐）"
           ></textarea>
+
+          <div class="info-field">
+            <label for="hotelMapInput">住宿區域 Google Maps 連結（選填）</label>
+            <input
+              id="hotelMapInput"
+              type="url"
+              placeholder="貼上飯店或住宿區域的 Google Maps 連結"
+            />
+            <div class="pdf-status" id="hotelMapStatus"></div>
+          </div>
+
+          <div class="info-field">
+            <label for="hotelPdfInput">住宿訂房 PDF（選填）</label>
+            <input id="hotelPdfInput" type="file" accept="application/pdf" />
+            <div class="pdf-status" id="hotelPdfStatus">
+              尚未上傳住宿 PDF
+            </div>
+          </div>
         </section>
       </div>
-    </section>
 
-    <div class="tips">
-      ✅ 每台裝置各自保存一份行程與機票 / 住宿資訊（localStorage）<br />
-      ✅ 想從電腦搬到手機：電腦按「匯出行程」複製文字 → 傳到手機 → 手機按「匯入行程」貼上 → 套用<br />
-      ✅ Map 欄位不填時，會用「景點名稱」當作 Google Maps 搜尋關鍵字
-    </div>
+      <section class="info-card" style="margin-top:10px;">
+        <h3>🎟 門票 / 票券 PDF</h3>
+        <div class="info-field">
+          <label for="passPdfInput">可一次選多個 PDF（例如：票券、行程憑證）</label>
+          <input id="passPdfInput" type="file" accept="application/pdf" multiple />
+        </div>
+        <div id="passPdfList" class="pass-list"></div>
+      </section>
+
+      <p class="tips">所有資料只會保存在這台裝置的瀏覽器（localStorage），方便你離線也能打開查看。</p>
+    </section>
   </div>
 
   <!-- Toast -->
@@ -776,12 +903,8 @@
         <h2 id="ioTitle">匯出行程</h2>
         <button class="modal-close" id="ioCloseBtn">&times;</button>
       </div>
-      <div class="modal-body" id="ioBody">
-        <!-- JS 依模式填入內容 -->
-      </div>
-      <div class="modal-footer" id="ioFooter">
-        <!-- JS 依模式填入按鈕 -->
-      </div>
+      <div class="modal-body" id="ioBody"></div>
+      <div class="modal-footer" id="ioFooter"></div>
     </div>
   </div>
 
@@ -789,7 +912,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
   <script>
-    // --- 基本設定 ---
+    // --- 常數與 Key ---
     const DAYS = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"];
     const PERIODS = ["morning", "afternoon", "evening"];
     const PERIOD_LABELS = {
@@ -798,14 +921,22 @@
       evening: "晚上",
     };
 
+    const DEFAULT_MUST_DO = [
+      { id: "photo", label: "每天至少拍 3 張兩人合照", checked: false },
+      { id: "food", label: "吃到一餐超滿意的當地美食", checked: false },
+      { id: "walk", label: "一起散步看雪景 / 夜景", checked: false },
+      { id: "gift", label: "彼此準備一個小禮物或小卡片", checked: false },
+      { id: "talk", label: "每天睡前 5 分鐘聊天總結今天開心的事", checked: false },
+    ];
+
     const STORAGE_KEY = "hokkaidoTripBoard_v4";
-    const META_KEY = "hokkaidoTripMeta_v1";
+    const META_KEY = "hokkaidoTripMeta_v2";
     const LEGACY_KEYS = ["hokkaidoTripBoard_v3"];
 
+    // DOM
     const boardEl = document.getElementById("board");
     const boardWrapperEl = document.getElementById("boardWrapper");
 
-    // 新增景點 modal 元件
     const modalBackdrop = document.getElementById("modalBackdrop");
     const modalCloseBtn = document.getElementById("modalCloseBtn");
     const daySelect = document.getElementById("daySelect");
@@ -819,7 +950,6 @@
     const cancelBtn = document.getElementById("cancelBtn");
     const saveBtn = document.getElementById("saveBtn");
 
-    // 匯出 / 匯入 modal 元件
     const ioBackdrop = document.getElementById("ioBackdrop");
     const ioTitle = document.getElementById("ioTitle");
     const ioBody = document.getElementById("ioBody");
@@ -828,28 +958,39 @@
     const exportBtn = document.getElementById("exportBtn");
     const importBtn = document.getElementById("importBtn");
 
-    // Toast
     const toastEl = document.getElementById("toast");
     const toastMessageEl = document.getElementById("toastMessage");
     let toastTimer = null;
 
-    // 底部資訊
     const flightInfoTextarea = document.getElementById("flightInfoTextarea");
     const hotelInfoTextarea = document.getElementById("hotelInfoTextarea");
     const ticketPdfInput = document.getElementById("ticketPdfInput");
     const ticketPdfStatus = document.getElementById("ticketPdfStatus");
+    const hotelPdfInput = document.getElementById("hotelPdfInput");
+    const hotelPdfStatus = document.getElementById("hotelPdfStatus");
+    const hotelMapInput = document.getElementById("hotelMapInput");
+    const hotelMapStatus = document.getElementById("hotelMapStatus");
+    const passPdfInput = document.getElementById("passPdfInput");
+    const passPdfList = document.getElementById("passPdfList");
+    const mustDoListEl = document.getElementById("mustDoList");
+    const coupleRulesTextarea = document.getElementById("coupleRulesTextarea");
 
-    let state = {}; // { "Day 1": { morning:[card], afternoon:[card], evening:[card] }, ... }
+    let state = {};
     let meta = {
       flightInfo: "",
       hotelInfo: "",
-      ticketPdf: null, // { name, dataUrl }
+      ticketPdf: null,  // 機票
+      hotelPdf: null,   // 住宿
+      hotelMapUrl: "",
+      passPdfs: [],     // 門票陣列
+      mustDoList: DEFAULT_MUST_DO.map((x) => ({ ...x })),
+      coupleRules: "",
     };
 
     let currentDayForAdd = "Day 1";
     let sortableInstances = [];
 
-    // --- 工具函式 ---
+    // --- 工具 ---
     function createEmptyState() {
       const obj = {};
       DAYS.forEach((day) => {
@@ -873,7 +1014,6 @@
         toastEl.classList.add("toast--success");
       }
       toastEl.classList.add("show");
-
       if (toastTimer) clearTimeout(toastTimer);
       toastTimer = setTimeout(() => {
         toastEl.classList.remove("show");
@@ -882,7 +1022,7 @@
 
     // --- 初始化 ---
     function init() {
-      // Day 選單
+      // Day 下拉
       DAYS.forEach((day) => {
         const option = document.createElement("option");
         option.value = day;
@@ -890,7 +1030,7 @@
         daySelect.appendChild(option);
       });
 
-      // 從 localStorage 載入行程
+      // 載入行程
       let raw = window.localStorage.getItem(STORAGE_KEY);
       if (!raw) {
         for (const k of LEGACY_KEYS) {
@@ -917,22 +1057,36 @@
       if (metaRaw) {
         try {
           const parsedMeta = JSON.parse(metaRaw);
-          meta = {
-            flightInfo: parsedMeta.flightInfo || "",
-            hotelInfo: parsedMeta.hotelInfo || "",
-            ticketPdf: parsedMeta.ticketPdf || null,
-          };
+          meta.flightInfo = parsedMeta.flightInfo || "";
+          meta.hotelInfo = parsedMeta.hotelInfo || "";
+          meta.ticketPdf = parsedMeta.ticketPdf || null;
+          meta.hotelPdf = parsedMeta.hotelPdf || null;
+          meta.hotelMapUrl = parsedMeta.hotelMapUrl || "";
+          meta.passPdfs = Array.isArray(parsedMeta.passPdfs)
+            ? parsedMeta.passPdfs
+            : [];
+          meta.coupleRules = parsedMeta.coupleRules || "";
+          if (Array.isArray(parsedMeta.mustDoList)) {
+            meta.mustDoList = parsedMeta.mustDoList.map((m) => ({
+              id: m.id || "",
+              label: m.label || "",
+              checked: !!m.checked,
+            }));
+          } else {
+            meta.mustDoList = DEFAULT_MUST_DO.map((x) => ({ ...x }));
+          }
         } catch {
-          meta = { flightInfo: "", hotelInfo: "", ticketPdf: null };
+          // 用預設
         }
       }
 
       renderBoard();
       initInfoPanel();
+      initMustDoPanel();
       bindEvents();
     }
 
-    // 讓各種舊格式都能轉成 {day:{morning:[],afternoon:[],evening:[]}}
+    // --- 正規化 state ---
     function normalizeState(rawObj) {
       const obj = createEmptyState();
       if (typeof rawObj !== "object" || rawObj === null) return obj;
@@ -941,14 +1095,11 @@
         const val = rawObj[day];
         if (!val) return;
 
-        // 舊版： { "Day 1": [cards...] }
         if (Array.isArray(val)) {
           obj[day].morning = val.map((item) =>
             normalizeCard(item, "morning")
           );
-        }
-        // 新版： { "Day 1": { morning:[...], afternoon:[...], evening:[...] } }
-        else if (typeof val === "object") {
+        } else if (typeof val === "object") {
           PERIODS.forEach((p) => {
             const arr = val[p];
             if (Array.isArray(arr)) {
@@ -974,7 +1125,7 @@
       };
     }
 
-    // --- 畫面渲染 ---
+    // --- 行程看板 ---
     function renderBoard() {
       boardEl.innerHTML = "";
       destroySortables();
@@ -1020,8 +1171,7 @@
 
           const cards = (state[day] && state[day][period]) || [];
           cards.forEach((card) => {
-            const cardEl = createCardElement(card, day, period);
-            cardList.appendChild(cardEl);
+            cardList.appendChild(createCardElement(card, day, period));
           });
 
           group.appendChild(cardList);
@@ -1109,19 +1259,16 @@
     function buildMapUrl(card) {
       const raw = (card.mapQuery || "").trim();
       const fallbackQuery = (card.title || "").trim();
-
       let query = raw || fallbackQuery;
       if (!query) return "";
-
       if (query.startsWith("http://") || query.startsWith("https://")) {
         return query;
       }
-
       const encoded = encodeURIComponent(query);
       return `https://www.google.com/maps/search/?api=1&query=${encoded}`;
     }
 
-    // --- SortableJS ---
+    // --- Sortable 設定 ---
     function setupSortables() {
       document.querySelectorAll(".card-list").forEach((listEl) => {
         const sortable = new Sortable(listEl, {
@@ -1158,9 +1305,7 @@
         listEl.querySelectorAll(".card").forEach((cardEl) => {
           const id = cardEl.dataset.id;
           const data = cardMap[id];
-          if (data) {
-            arr.push(data);
-          }
+          if (data) arr.push(data);
         });
         newState[day][period] = arr;
       });
@@ -1180,11 +1325,47 @@
       return map;
     }
 
-    // --- 下方資訊 UI 初始化 ---
+    // --- 上方必做清單 / 約法 ---
+    function initMustDoPanel() {
+      renderMustDoList();
+      coupleRulesTextarea.value = meta.coupleRules || "";
+    }
+
+    function renderMustDoList() {
+      mustDoListEl.innerHTML = "";
+      meta.mustDoList.forEach((item, idx) => {
+        const row = document.createElement("label");
+        row.className = "mustdo-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = !!item.checked;
+        checkbox.addEventListener("change", () => {
+          meta.mustDoList[idx].checked = checkbox.checked;
+          persistMeta();
+          renderMustDoList();
+        });
+
+        const span = document.createElement("span");
+        span.className = "mustdo-label";
+        if (item.checked) span.classList.add("done");
+        span.textContent = item.label;
+
+        row.appendChild(checkbox);
+        row.appendChild(span);
+        mustDoListEl.appendChild(row);
+      });
+    }
+
+    // --- 下方資訊＆檔案 ---
     function initInfoPanel() {
       flightInfoTextarea.value = meta.flightInfo || "";
       hotelInfoTextarea.value = meta.hotelInfo || "";
+      hotelMapInput.value = meta.hotelMapUrl || "";
       renderTicketStatus();
+      renderHotelStatus();
+      renderHotelMapStatus();
+      renderPassList();
     }
 
     function renderTicketStatus() {
@@ -1192,26 +1373,95 @@
         ticketPdfStatus.innerHTML = "";
         const span = document.createElement("span");
         span.textContent = `已上傳：${meta.ticketPdf.name}`;
-
         const openBtn = document.createElement("button");
         openBtn.type = "button";
         openBtn.className = "link-btn";
         openBtn.textContent = "開啟機票 PDF";
-        openBtn.addEventListener("click", () => {
-          if (!meta.ticketPdf || !meta.ticketPdf.dataUrl) return;
-          const win = window.open();
-          if (win) {
-            win.document.write(
-              `<iframe src="${meta.ticketPdf.dataUrl}" ` +
-                'style="border:0;width:100%;height:100%;"></iframe>'
-            );
-          }
-        });
-
+        openBtn.addEventListener("click", () => openPdf(meta.ticketPdf));
         ticketPdfStatus.appendChild(span);
         ticketPdfStatus.appendChild(openBtn);
       } else {
         ticketPdfStatus.textContent = "尚未上傳機票 PDF";
+      }
+    }
+
+    function renderHotelStatus() {
+      if (meta.hotelPdf && meta.hotelPdf.name) {
+        hotelPdfStatus.innerHTML = "";
+        const span = document.createElement("span");
+        span.textContent = `已上傳：${meta.hotelPdf.name}`;
+        const openBtn = document.createElement("button");
+        openBtn.type = "button";
+        openBtn.className = "link-btn";
+        openBtn.textContent = "開啟住宿 PDF";
+        openBtn.addEventListener("click", () => openPdf(meta.hotelPdf));
+        hotelPdfStatus.appendChild(span);
+        hotelPdfStatus.appendChild(openBtn);
+      } else {
+        hotelPdfStatus.textContent = "尚未上傳住宿 PDF";
+      }
+    }
+
+    function renderHotelMapStatus() {
+      hotelMapStatus.innerHTML = "";
+      const url = (meta.hotelMapUrl || "").trim();
+      if (!url) return;
+      const btn = document.createElement("a");
+      btn.className = "link-btn";
+      btn.href = url;
+      btn.target = "_blank";
+      btn.rel = "noopener noreferrer";
+      btn.textContent = "在 Google Maps 開啟住宿位置";
+      hotelMapStatus.appendChild(btn);
+    }
+
+    function renderPassList() {
+      passPdfList.innerHTML = "";
+      if (!meta.passPdfs || meta.passPdfs.length === 0) {
+        const empty = document.createElement("div");
+        empty.textContent = "尚未上傳門票 / 票券 PDF";
+        passPdfList.appendChild(empty);
+        return;
+      }
+
+      meta.passPdfs.forEach((item, idx) => {
+        const row = document.createElement("div");
+        row.className = "pass-item";
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "pass-name";
+        nameSpan.textContent = item.name || `票券 ${idx + 1}`;
+
+        const openBtn = document.createElement("button");
+        openBtn.type = "button";
+        openBtn.className = "link-btn";
+        openBtn.textContent = "開啟";
+        openBtn.addEventListener("click", () => openPdf(item));
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "pass-delete-btn";
+        delBtn.textContent = "✕";
+        delBtn.addEventListener("click", () => {
+          meta.passPdfs.splice(idx, 1);
+          persistMeta();
+          renderPassList();
+        });
+
+        row.appendChild(nameSpan);
+        row.appendChild(openBtn);
+        row.appendChild(delBtn);
+        passPdfList.appendChild(row);
+      });
+    }
+
+    function openPdf(pdfObj) {
+      if (!pdfObj || !pdfObj.dataUrl) return;
+      const win = window.open();
+      if (win) {
+        win.document.write(
+          `<iframe src="${pdfObj.dataUrl}" style="border:0;width:100%;height:100%;"></iframe>`
+        );
       }
     }
 
@@ -1300,7 +1550,7 @@
       const helper = document.createElement("div");
       helper.className = "io-helper";
       helper.textContent =
-        "注意：匯入後會覆蓋目前這台裝置上的行程與機票 / 住宿資料。";
+        "匯入後會覆蓋這台裝置的行程與機票 / 住宿 / 門票 / 清單與約法資料。";
 
       ioBody.appendChild(textarea);
       ioBody.appendChild(helper);
@@ -1321,7 +1571,6 @@
           alert("請先貼上匯出的文字。");
           return;
         }
-
         try {
           const parsed = JSON.parse(text);
           if (parsed.state) {
@@ -1331,17 +1580,30 @@
           }
 
           if (parsed.meta) {
-            meta = {
-              flightInfo: parsed.meta.flightInfo || "",
-              hotelInfo: parsed.meta.hotelInfo || "",
-              ticketPdf: parsed.meta.ticketPdf || null,
-            };
+            const m = parsed.meta;
+            meta.flightInfo = m.flightInfo || "";
+            meta.hotelInfo = m.hotelInfo || "";
+            meta.ticketPdf = m.ticketPdf || null;
+            meta.hotelPdf = m.hotelPdf || null;
+            meta.hotelMapUrl = m.hotelMapUrl || "";
+            meta.passPdfs = Array.isArray(m.passPdfs) ? m.passPdfs : [];
+            meta.coupleRules = m.coupleRules || "";
+            if (Array.isArray(m.mustDoList)) {
+              meta.mustDoList = m.mustDoList.map((x) => ({
+                id: x.id || "",
+                label: x.label || "",
+                checked: !!x.checked,
+              }));
+            } else {
+              meta.mustDoList = DEFAULT_MUST_DO.map((x) => ({ ...x }));
+            }
           }
 
           persistState();
           persistMeta();
           renderBoard();
           initInfoPanel();
+          initMustDoPanel();
           closeIoModal();
           boardWrapperEl.classList.add("flash-success");
           setTimeout(
@@ -1349,10 +1611,8 @@
             800
           );
           showToast("行程已更新");
-        } catch (e) {
-          alert(
-            "匯入失敗：格式不是有效的 JSON，或內容結構不正確。請確認貼上的是原本匯出的文字。"
-          );
+        } catch {
+          alert("匯入失敗：請確認貼上的是匯出的完整文字。");
         }
       });
 
@@ -1369,14 +1629,11 @@
 
     // --- 事件綁定 ---
     function bindEvents() {
-      // 新增景點 modal
       modalCloseBtn.addEventListener("click", closeAddModal);
       cancelBtn.addEventListener("click", closeAddModal);
 
       modalBackdrop.addEventListener("click", (e) => {
-        if (e.target === modalBackdrop) {
-          closeAddModal();
-        }
+        if (e.target === modalBackdrop) closeAddModal();
       });
 
       titleInput.addEventListener("input", () => {
@@ -1385,18 +1642,14 @@
 
       saveBtn.addEventListener("click", handleSaveCard);
 
-      // 匯出 / 匯入 modal
       ioCloseBtn.addEventListener("click", closeIoModal);
       ioBackdrop.addEventListener("click", (e) => {
-        if (e.target === ioBackdrop) {
-          closeIoModal();
-        }
+        if (e.target === ioBackdrop) closeIoModal();
       });
 
       exportBtn.addEventListener("click", openExportModal);
       importBtn.addEventListener("click", openImportModal);
 
-      // 底部資訊
       flightInfoTextarea.addEventListener("input", () => {
         meta.flightInfo = flightInfoTextarea.value;
         persistMeta();
@@ -1407,7 +1660,20 @@
         persistMeta();
       });
 
+      coupleRulesTextarea.addEventListener("input", () => {
+        meta.coupleRules = coupleRulesTextarea.value;
+        persistMeta();
+      });
+
+      hotelMapInput.addEventListener("input", () => {
+        meta.hotelMapUrl = hotelMapInput.value.trim();
+        persistMeta();
+        renderHotelMapStatus();
+      });
+
       ticketPdfInput.addEventListener("change", handleTicketUpload);
+      hotelPdfInput.addEventListener("change", handleHotelPdfUpload);
+      passPdfInput.addEventListener("change", handlePassPdfUpload);
     }
 
     function handleSaveCard() {
@@ -1456,7 +1722,7 @@
       }
     }
 
-    // 機票 PDF 上傳處理
+    // 機票 / 住宿 / 門票 PDF 上傳
     function handleTicketUpload() {
       const file = ticketPdfInput.files[0];
       if (!file) return;
@@ -1465,18 +1731,59 @@
         ticketPdfInput.value = "";
         return;
       }
-
       const reader = new FileReader();
       reader.onload = (e) => {
-        meta.ticketPdf = {
-          name: file.name,
-          dataUrl: e.target.result,
-        };
+        meta.ticketPdf = { name: file.name, dataUrl: e.target.result };
         persistMeta();
         renderTicketStatus();
         showToast("已上傳機票 PDF");
       };
       reader.readAsDataURL(file);
+    }
+
+    function handleHotelPdfUpload() {
+      const file = hotelPdfInput.files[0];
+      if (!file) return;
+      if (file.type !== "application/pdf") {
+        alert("請選擇 PDF 檔案。");
+        hotelPdfInput.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        meta.hotelPdf = { name: file.name, dataUrl: e.target.result };
+        persistMeta();
+        renderHotelStatus();
+        showToast("已上傳住宿 PDF");
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handlePassPdfUpload() {
+      const files = Array.from(passPdfInput.files || []);
+      if (files.length === 0) return;
+      const validFiles = files.filter((f) => f.type === "application/pdf");
+      if (validFiles.length === 0) {
+        alert("請選擇 PDF 檔案。");
+        passPdfInput.value = "";
+        return;
+      }
+
+      let remaining = validFiles.length;
+      validFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          meta.passPdfs.push({ name: file.name, dataUrl: e.target.result });
+          remaining -= 1;
+          if (remaining === 0) {
+            persistMeta();
+            renderPassList();
+            showToast("已上傳門票 PDF");
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      passPdfInput.value = "";
     }
 
     // --- 刪除卡片 ---
