@@ -7,16 +7,17 @@
 
   <style>
     :root {
-      --bg: #f5f5f7;
-      --card-bg: #ffffff;
-      --accent: #4f46e5;
-      --accent-soft: #eef2ff;
+      --bg: #f2f2f7;
+      --surface: #ffffff;
+      --accent: #0a84ff;
+      --accent-soft: #e5f1ff;
       --text-main: #111827;
       --text-sub: #6b7280;
       --border: #e5e7eb;
       --radius-lg: 18px;
-      --radius-sm: 10px;
-      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.08);
+      --radius-md: 14px;
+      --radius-sm: 12px;
+      --shadow-soft: 0 6px 16px rgba(15, 23, 42, 0.08);
     }
 
     * {
@@ -32,32 +33,32 @@
     }
 
     .app {
-      max-width: 1200px;
+      max-width: 980px;
       margin: 0 auto;
-      padding: 16px;
-      padding-bottom: 80px;
+      padding: 12px 12px 90px;
     }
 
     header {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-bottom: 10px;
+      gap: 4px;
+      margin-bottom: 8px;
     }
 
     header h1 {
-      font-size: 22px;
+      font-size: 20px;
       margin: 0;
     }
 
     header p {
       margin: 0;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-sub);
+      line-height: 1.5;
     }
 
     .toolbar {
-      margin-top: 8px;
+      margin-top: 6px;
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
@@ -68,12 +69,13 @@
       border: 1px solid #d1d5db;
       background: #f9fafb;
       color: #374151;
-      padding: 5px 12px;
-      font-size: 12px;
+      padding: 4px 10px;
+      font-size: 11px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      transition: background 0.15s ease, transform 0.15s ease;
     }
 
     .toolbar-btn span {
@@ -82,75 +84,138 @@
 
     .toolbar-btn:hover {
       background: #e5e7eb;
+      transform: translateY(-1px);
     }
 
-    /* Board layout */
+    /* Board layout：簡化陰影，手機優先 */
     .board-wrapper {
-      background: var(--card-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-soft);
-      padding: 10px 6px 12px;
-      overflow-x: auto;
+      background: transparent;
+      padding: 4px 0 8px;
+    }
+
+    .board-wrapper.flash-success {
+      animation: flashSuccess 0.7s ease-out;
+    }
+
+    @keyframes flashSuccess {
+      0% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+      }
+      30% {
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.4);
+      }
+      100% {
+        box-shadow: none;
+      }
     }
 
     .board {
       display: flex;
       gap: 10px;
-      min-height: 260px;
+      min-height: 220px;
+      overflow-x: auto;
+      padding-bottom: 4px;
     }
 
     .day-column {
-      background: var(--accent-soft);
-      border-radius: 14px;
+      background: var(--surface);
+      border-radius: var(--radius-md);
       padding: 8px;
-      min-width: 210px;
+      min-width: 230px;
       max-width: 240px;
       display: flex;
       flex-direction: column;
       max-height: 520px;
+      border: 1px solid #e5e7eb;
     }
 
     .day-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .day-title {
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .day-date {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-sub);
+    }
+
+    .period-group {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 5px 5px 4px;
+      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      min-height: 64px;
+    }
+
+    .period-header {
+      font-size: 10px;
+      font-weight: 600;
+      color: #4b5563;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .period-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+    }
+
+    .period-dot.morning {
+      background: #f97316;
+    }
+    .period-dot.afternoon {
+      background: #22c55e;
+    }
+    .period-dot.evening {
+      background: #6366f1;
     }
 
     .card-list {
       flex: 1;
       overflow-y: auto;
-      padding-right: 4px;
-      margin-top: 4px;
-      margin-bottom: 4px;
+      padding-right: 1px;
     }
 
     .card {
-      background: var(--card-bg);
+      background: #f3f4f6;
       border-radius: var(--radius-sm);
       padding: 6px;
-      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
       margin-bottom: 6px;
       display: flex;
       gap: 6px;
       position: relative;
       flex-direction: row;
+      align-items: flex-start;
+      cursor: grab;
+      opacity: 0;
+      transform: translateY(4px);
+      animation: fadeInCard 0.22s ease-out forwards;
+      border: 1px solid #e5e7eb;
+    }
+
+    @keyframes fadeInCard {
+      to {
+        opacity: 1;
+        transform: translateY(0px);
+      }
     }
 
     .card img {
-      width: 70px;
-      height: 70px;
-      border-radius: 10px;
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
       object-fit: cover;
       flex-shrink: 0;
       background: #e5e7eb;
@@ -172,7 +237,7 @@
     }
 
     .card-title {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
@@ -180,20 +245,20 @@
     }
 
     .card-time {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--accent);
       flex-shrink: 0;
     }
 
     .card-note {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-sub);
-      max-height: 4.2em;
+      max-height: 3.8em;
       overflow: hidden;
     }
 
     .card-footer {
-      margin-top: 4px;
+      margin-top: 3px;
       display: flex;
       justify-content: flex-start;
       gap: 6px;
@@ -202,10 +267,10 @@
 
     .map-link-btn {
       border-radius: 999px;
-      border: 1px solid #c7d2fe;
-      background: #e0e7ff;
-      color: #3730a3;
-      font-size: 11px;
+      border: 1px solid #bfdbfe;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: 10px;
       padding: 3px 8px;
       display: inline-flex;
       align-items: center;
@@ -213,6 +278,7 @@
       text-decoration: none;
       cursor: pointer;
       white-space: nowrap;
+      transition: background 0.15s ease, transform 0.15s ease;
     }
 
     .map-link-btn span {
@@ -220,42 +286,57 @@
     }
 
     .map-link-btn:hover {
-      background: #c7d2fe;
+      background: #bae6fd;
+      transform: translateY(-1px);
     }
 
     .card-delete {
       position: absolute;
-      right: 4px;
-      top: 2px;
+      right: 3px;
+      top: 1px;
       border: none;
       background: transparent;
       color: #9ca3af;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
       padding: 2px;
+      transition: color 0.15s ease, transform 0.15s ease;
     }
 
     .card-delete:hover {
       color: #ef4444;
+      transform: scale(1.05);
     }
 
     .add-btn {
-      margin-top: 2px;
+      margin-top: 6px;
       width: 100%;
       border-radius: 999px;
       border: none;
       padding: 6px 0;
       font-size: 12px;
-      background: #e0e7ff;
-      color: #3730a3;
+      background: #e0ecff;
+      color: #1d4ed8;
       cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
     }
 
     .add-btn:hover {
-      background: #c7d2fe;
+      background: #c7ddff;
+      transform: translateY(-1px);
     }
 
-    /* 共用 Modal 背景 */
+    /* SortableJS drag style */
+    .card-chosen {
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.25) !important;
+      transform: scale(1.02);
+      cursor: grabbing;
+    }
+    .card-ghost {
+      opacity: 0.45;
+    }
+
+    /* Modal */
     .modal-backdrop,
     .modal-backdrop-io {
       position: fixed;
@@ -274,11 +355,11 @@
     }
 
     .modal {
-      background: var(--card-bg);
+      background: var(--surface);
       border-radius: 18px;
       padding: 14px;
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       box-shadow: var(--shadow-soft);
     }
 
@@ -381,9 +462,10 @@
     }
 
     .tips {
-      margin-top: 8px;
+      margin-top: 4px;
       font-size: 11px;
       color: var(--text-sub);
+      line-height: 1.5;
     }
 
     .io-helper {
@@ -392,15 +474,150 @@
       margin-top: 6px;
     }
 
+    /* Toast */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(10px);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: #f9fafb;
+      background: rgba(15, 23, 42, 0.92);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0px);
+    }
+
+    .toast--success {
+      background: #16a34a;
+    }
+
+    .toast-icon {
+      font-size: 16px;
+    }
+
+    /* 下方：機票 & 飯店資訊區塊 */
+    .info-panel {
+      margin-top: 10px;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .info-panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 6px;
+    }
+
+    .info-panel-desc {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .info-card {
+      border-radius: 14px;
+      padding: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .info-card h3 {
+      margin: 0 0 6px;
+      font-size: 13px;
+    }
+
+    .info-textarea {
+      width: 100%;
+      min-height: 70px;
+      resize: vertical;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+
+    .info-field {
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .info-field label {
+      color: var(--text-sub);
+    }
+
+    .info-field input[type="file"] {
+      font-size: 11px;
+    }
+
+    .pdf-status {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .link-btn {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+      text-decoration: none;
+      color: #111827;
+    }
+
+    .link-btn:hover {
+      background: #e5e7eb;
+    }
+
+    @media (min-width: 720px) {
+      .info-grid {
+        grid-template-columns: 1.1fr 0.9fr;
+      }
+    }
+
     /* Mobile tweaks */
     @media (max-width: 768px) {
+      .app {
+        padding: 10px 10px 90px;
+      }
+
       .board {
         min-width: 100%;
       }
 
       .day-column {
-        min-width: 78vw;
-        max-width: 82vw;
+        min-width: 76vw;
+        max-width: 80vw;
       }
 
       header h1 {
@@ -413,7 +630,7 @@
   <div class="app">
     <header>
       <h1>北海道行程看板</h1>
-      <p>Day1～Day6 看板，可新增景點、圖片，一鍵開啟 Google Maps，也可匯出 / 匯入到其他裝置。</p>
+      <p>Day1～Day6 行程，小卡片整理景點；最下方可記錄機票與住宿資訊，方便手機隨時查看。</p>
 
       <div class="toolbar">
         <button class="toolbar-btn" id="exportBtn" type="button">
@@ -425,17 +642,60 @@
       </div>
     </header>
 
-    <div class="board-wrapper">
+    <div class="board-wrapper" id="boardWrapper">
       <div class="board" id="board">
         <!-- JS 產生 Day 1~Day 6 -->
       </div>
     </div>
 
+    <!-- 下方：機票 PDF & 住宿資訊 -->
+    <section class="info-panel">
+      <h2 class="info-panel-title">旅程重要資訊</h2>
+      <p class="info-panel-desc">
+        建議先把去程 / 回程班機、行李額度與各晚住宿名稱放在這裡，出門只要打開這一頁就能快速確認。
+      </p>
+
+      <div class="info-grid">
+        <section class="info-card">
+          <h3>✈️ 機票資訊</h3>
+
+          <textarea
+            id="flightInfoTextarea"
+            class="info-textarea"
+            placeholder="例如：&#10;去程：2/3 桃園 TPE → 新千歲 CTS，09:30 起飛，行李 23kg&#10;回程：2/8 新千歲 CTS → 桃園 TPE，20:15 起飛，行李 23kg"
+          ></textarea>
+
+          <div class="info-field">
+            <label for="ticketPdfInput">機票 PDF 檔案（選填）</label>
+            <input id="ticketPdfInput" type="file" accept="application/pdf" />
+            <div class="pdf-status" id="ticketPdfStatus">
+              尚未上傳機票 PDF
+            </div>
+          </div>
+        </section>
+
+        <section class="info-card">
+          <h3>🏨 住宿資訊</h3>
+          <textarea
+            id="hotelInfoTextarea"
+            class="info-textarea"
+            placeholder="例如：&#10;Day1：札幌 ○○ 飯店（近大通站 3 號出口）&#10;Day2：小樽 ○○ 旅館（含早餐）&#10;Day3：洞爺湖 ○○ 溫泉飯店（19:00 晚餐）"
+          ></textarea>
+        </section>
+      </div>
+    </section>
+
     <div class="tips">
-      ✅ 每台裝置各自保存一份行程（localStorage）<br />
+      ✅ 每台裝置各自保存一份行程與機票 / 住宿資訊（localStorage）<br />
       ✅ 想從電腦搬到手機：電腦按「匯出行程」複製文字 → 傳到手機 → 手機按「匯入行程」貼上 → 套用<br />
       ✅ Map 欄位不填時，會用「景點名稱」當作 Google Maps 搜尋關鍵字
     </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-icon">✔</span>
+    <span id="toastMessage">已完成</span>
   </div>
 
   <!-- 新增景點 Modal -->
@@ -450,6 +710,16 @@
           <label for="daySelect">哪一天</label>
           <select id="daySelect"></select>
         </div>
+
+        <div class="field">
+          <label for="periodSelect">時間段</label>
+          <select id="periodSelect">
+            <option value="morning">早上</option>
+            <option value="afternoon">下午</option>
+            <option value="evening">晚上</option>
+          </select>
+        </div>
+
         <div class="field">
           <label for="titleInput">景點 / 活動名稱 *</label>
           <input
@@ -479,11 +749,16 @@
           <small>例如：「札幌電視塔」、「小樽運河」、「北海道札幌市中央區…」或貼整個 Google Maps URL。</small>
         </div>
         <div class="field">
-          <label for="imageInput">圖片網址（選填，支援 JPG/PNG/GIF）</label>
+          <label for="imageFileInput">上傳照片（選填）</label>
+          <input id="imageFileInput" type="file" accept="image/*" />
+          <small>照片會存在瀏覽器（不會上傳到伺服器）。</small>
+        </div>
+        <div class="field">
+          <label for="imageUrlInput">或圖片網址（選填）</label>
           <input
-            id="imageInput"
+            id="imageUrlInput"
             type="url"
-            placeholder="貼上 IG / Google 相簿 / 網路照片連結"
+            placeholder="IG / Google 相簿 / 網路照片連結"
           />
         </div>
       </div>
@@ -510,22 +785,37 @@
     </div>
   </div>
 
+  <!-- SortableJS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
   <script>
     // --- 基本設定 ---
     const DAYS = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"];
-    const STORAGE_KEY = "hokkaidoTripBoard_v3"; // 新版本 key
+    const PERIODS = ["morning", "afternoon", "evening"];
+    const PERIOD_LABELS = {
+      morning: "早上",
+      afternoon: "下午",
+      evening: "晚上",
+    };
+
+    const STORAGE_KEY = "hokkaidoTripBoard_v4";
+    const META_KEY = "hokkaidoTripMeta_v1";
+    const LEGACY_KEYS = ["hokkaidoTripBoard_v3"];
 
     const boardEl = document.getElementById("board");
+    const boardWrapperEl = document.getElementById("boardWrapper");
 
     // 新增景點 modal 元件
     const modalBackdrop = document.getElementById("modalBackdrop");
     const modalCloseBtn = document.getElementById("modalCloseBtn");
     const daySelect = document.getElementById("daySelect");
+    const periodSelect = document.getElementById("periodSelect");
     const titleInput = document.getElementById("titleInput");
     const timeInput = document.getElementById("timeInput");
     const noteInput = document.getElementById("noteInput");
     const mapInput = document.getElementById("mapInput");
-    const imageInput = document.getElementById("imageInput");
+    const imageFileInput = document.getElementById("imageFileInput");
+    const imageUrlInput = document.getElementById("imageUrlInput");
     const cancelBtn = document.getElementById("cancelBtn");
     const saveBtn = document.getElementById("saveBtn");
 
@@ -538,8 +828,57 @@
     const exportBtn = document.getElementById("exportBtn");
     const importBtn = document.getElementById("importBtn");
 
-    let state = {}; // { "Day 1": [ {title, time, note, imageUrl, mapQuery}, ... ], ... }
+    // Toast
+    const toastEl = document.getElementById("toast");
+    const toastMessageEl = document.getElementById("toastMessage");
+    let toastTimer = null;
+
+    // 底部資訊
+    const flightInfoTextarea = document.getElementById("flightInfoTextarea");
+    const hotelInfoTextarea = document.getElementById("hotelInfoTextarea");
+    const ticketPdfInput = document.getElementById("ticketPdfInput");
+    const ticketPdfStatus = document.getElementById("ticketPdfStatus");
+
+    let state = {}; // { "Day 1": { morning:[card], afternoon:[card], evening:[card] }, ... }
+    let meta = {
+      flightInfo: "",
+      hotelInfo: "",
+      ticketPdf: null, // { name, dataUrl }
+    };
+
     let currentDayForAdd = "Day 1";
+    let sortableInstances = [];
+
+    // --- 工具函式 ---
+    function createEmptyState() {
+      const obj = {};
+      DAYS.forEach((day) => {
+        obj[day] = { morning: [], afternoon: [], evening: [] };
+      });
+      return obj;
+    }
+
+    function createCardId() {
+      return (
+        "c_" +
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2, 8)
+      );
+    }
+
+    function showToast(message, type = "success") {
+      toastMessageEl.textContent = message;
+      toastEl.classList.remove("toast--success");
+      if (type === "success") {
+        toastEl.classList.add("toast--success");
+      }
+      toastEl.classList.add("show");
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.classList.remove("show");
+      }, 1800);
+    }
 
     // --- 初始化 ---
     function init() {
@@ -551,37 +890,95 @@
         daySelect.appendChild(option);
       });
 
-      // 從 localStorage 載入
-      const raw = window.localStorage.getItem(STORAGE_KEY);
+      // 從 localStorage 載入行程
+      let raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        for (const k of LEGACY_KEYS) {
+          const legacy = window.localStorage.getItem(k);
+          if (legacy) {
+            raw = legacy;
+            break;
+          }
+        }
+      }
       if (raw) {
         try {
           const parsed = JSON.parse(raw);
-          DAYS.forEach((d) => {
-            if (!parsed[d]) parsed[d] = [];
-          });
-          state = parsed;
-        } catch (e) {
+          state = normalizeState(parsed);
+        } catch {
           state = createEmptyState();
         }
       } else {
         state = createEmptyState();
       }
 
+      // 載入 meta
+      const metaRaw = window.localStorage.getItem(META_KEY);
+      if (metaRaw) {
+        try {
+          const parsedMeta = JSON.parse(metaRaw);
+          meta = {
+            flightInfo: parsedMeta.flightInfo || "",
+            hotelInfo: parsedMeta.hotelInfo || "",
+            ticketPdf: parsedMeta.ticketPdf || null,
+          };
+        } catch {
+          meta = { flightInfo: "", hotelInfo: "", ticketPdf: null };
+        }
+      }
+
       renderBoard();
+      initInfoPanel();
       bindEvents();
     }
 
-    function createEmptyState() {
-      const obj = {};
+    // 讓各種舊格式都能轉成 {day:{morning:[],afternoon:[],evening:[]}}
+    function normalizeState(rawObj) {
+      const obj = createEmptyState();
+      if (typeof rawObj !== "object" || rawObj === null) return obj;
+
       DAYS.forEach((day) => {
-        obj[day] = [];
+        const val = rawObj[day];
+        if (!val) return;
+
+        // 舊版： { "Day 1": [cards...] }
+        if (Array.isArray(val)) {
+          obj[day].morning = val.map((item) =>
+            normalizeCard(item, "morning")
+          );
+        }
+        // 新版： { "Day 1": { morning:[...], afternoon:[...], evening:[...] } }
+        else if (typeof val === "object") {
+          PERIODS.forEach((p) => {
+            const arr = val[p];
+            if (Array.isArray(arr)) {
+              obj[day][p] = arr.map((item) => normalizeCard(item, p));
+            }
+          });
+        }
       });
+
       return obj;
+    }
+
+    function normalizeCard(item, defaultPeriod) {
+      const safe = item || {};
+      return {
+        id: safe.id || createCardId(),
+        title: (safe.title || "").toString(),
+        time: (safe.time || "").toString(),
+        note: (safe.note || "").toString(),
+        mapQuery: (safe.mapQuery || "").toString(),
+        imageUrl: (safe.imageUrl || "").toString(),
+        period: safe.period || defaultPeriod,
+      };
     }
 
     // --- 畫面渲染 ---
     function renderBoard() {
       boardEl.innerHTML = "";
+      destroySortables();
+
       DAYS.forEach((day) => {
         const column = document.createElement("section");
         column.className = "day-column";
@@ -594,17 +991,41 @@
         title.textContent = day;
         const date = document.createElement("div");
         date.className = "day-date";
-        date.textContent = ""; // 需要的話可以填實際日期
+        date.textContent = "";
         header.appendChild(title);
         header.appendChild(date);
+        column.appendChild(header);
 
-        const cardList = document.createElement("div");
-        cardList.className = "card-list";
+        PERIODS.forEach((period) => {
+          const group = document.createElement("div");
+          group.className = "period-group";
 
-        const cards = state[day] || [];
-        cards.forEach((card, index) => {
-          const cardEl = createCardElement(card, day, index);
-          cardList.appendChild(cardEl);
+          const headerRow = document.createElement("div");
+          headerRow.className = "period-header";
+
+          const dot = document.createElement("div");
+          dot.className = `period-dot ${period}`;
+          headerRow.appendChild(dot);
+
+          const label = document.createElement("span");
+          label.textContent = PERIOD_LABELS[period];
+          headerRow.appendChild(label);
+
+          group.appendChild(headerRow);
+
+          const cardList = document.createElement("div");
+          cardList.className = "card-list";
+          cardList.dataset.day = day;
+          cardList.dataset.period = period;
+
+          const cards = (state[day] && state[day][period]) || [];
+          cards.forEach((card) => {
+            const cardEl = createCardElement(card, day, period);
+            cardList.appendChild(cardEl);
+          });
+
+          group.appendChild(cardList);
+          column.appendChild(group);
         });
 
         const addBtn = document.createElement("button");
@@ -612,19 +1033,20 @@
         addBtn.type = "button";
         addBtn.textContent = "＋ 新增景點";
         addBtn.addEventListener("click", () => openAddModal(day));
-
-        column.appendChild(header);
-        column.appendChild(cardList);
         column.appendChild(addBtn);
+
         boardEl.appendChild(column);
       });
+
+      setupSortables();
     }
 
-    function createCardElement(card, day, index) {
+    function createCardElement(card, day, period) {
       const cardEl = document.createElement("div");
       cardEl.className = "card";
       cardEl.dataset.day = day;
-      cardEl.dataset.index = index.toString();
+      cardEl.dataset.period = period;
+      cardEl.dataset.id = card.id;
 
       if (card.imageUrl) {
         const img = document.createElement("img");
@@ -657,7 +1079,6 @@
       content.appendChild(titleRow);
       content.appendChild(note);
 
-      // footer: Google Maps 按鈕
       const mapUrl = buildMapUrl(card);
       if (mapUrl) {
         const footer = document.createElement("div");
@@ -678,14 +1099,13 @@
       delBtn.className = "card-delete";
       delBtn.type = "button";
       delBtn.innerHTML = "&times;";
-      delBtn.addEventListener("click", () => deleteCard(day, index));
+      delBtn.addEventListener("click", () => deleteCardById(card.id));
 
       cardEl.appendChild(content);
       cardEl.appendChild(delBtn);
       return cardEl;
     }
 
-    // 建立 Google Maps URL
     function buildMapUrl(card) {
       const raw = (card.mapQuery || "").trim();
       const fallbackQuery = (card.title || "").trim();
@@ -701,15 +1121,111 @@
       return `https://www.google.com/maps/search/?api=1&query=${encoded}`;
     }
 
-    // --- 新增景點 Modal 控制 ---
+    // --- SortableJS ---
+    function setupSortables() {
+      document.querySelectorAll(".card-list").forEach((listEl) => {
+        const sortable = new Sortable(listEl, {
+          group: "trip-cards",
+          animation: 150,
+          ghostClass: "card-ghost",
+          chosenClass: "card-chosen",
+          dragClass: "card-drag",
+          handle: ".card",
+          onEnd: () => {
+            syncStateFromDOM();
+            persistState();
+          },
+        });
+        sortableInstances.push(sortable);
+      });
+    }
+
+    function destroySortables() {
+      sortableInstances.forEach((inst) => inst.destroy());
+      sortableInstances = [];
+    }
+
+    function syncStateFromDOM() {
+      const newState = createEmptyState();
+      const cardMap = buildCardMap();
+
+      document.querySelectorAll(".card-list").forEach((listEl) => {
+        const day = listEl.dataset.day;
+        const period = listEl.dataset.period;
+        if (!day || !period) return;
+
+        const arr = [];
+        listEl.querySelectorAll(".card").forEach((cardEl) => {
+          const id = cardEl.dataset.id;
+          const data = cardMap[id];
+          if (data) {
+            arr.push(data);
+          }
+        });
+        newState[day][period] = arr;
+      });
+
+      state = newState;
+    }
+
+    function buildCardMap() {
+      const map = {};
+      DAYS.forEach((day) => {
+        PERIODS.forEach((p) => {
+          (state[day][p] || []).forEach((card) => {
+            map[card.id] = card;
+          });
+        });
+      });
+      return map;
+    }
+
+    // --- 下方資訊 UI 初始化 ---
+    function initInfoPanel() {
+      flightInfoTextarea.value = meta.flightInfo || "";
+      hotelInfoTextarea.value = meta.hotelInfo || "";
+      renderTicketStatus();
+    }
+
+    function renderTicketStatus() {
+      if (meta.ticketPdf && meta.ticketPdf.name) {
+        ticketPdfStatus.innerHTML = "";
+        const span = document.createElement("span");
+        span.textContent = `已上傳：${meta.ticketPdf.name}`;
+
+        const openBtn = document.createElement("button");
+        openBtn.type = "button";
+        openBtn.className = "link-btn";
+        openBtn.textContent = "開啟機票 PDF";
+        openBtn.addEventListener("click", () => {
+          if (!meta.ticketPdf || !meta.ticketPdf.dataUrl) return;
+          const win = window.open();
+          if (win) {
+            win.document.write(
+              `<iframe src="${meta.ticketPdf.dataUrl}" ` +
+                'style="border:0;width:100%;height:100%;"></iframe>'
+            );
+          }
+        });
+
+        ticketPdfStatus.appendChild(span);
+        ticketPdfStatus.appendChild(openBtn);
+      } else {
+        ticketPdfStatus.textContent = "尚未上傳機票 PDF";
+      }
+    }
+
+    // --- Modal 控制 ---
     function openAddModal(day) {
       currentDayForAdd = day;
       daySelect.value = day;
+      periodSelect.value = "morning";
       titleInput.value = "";
       timeInput.value = "";
       noteInput.value = "";
       mapInput.value = "";
-      imageInput.value = "";
+      imageFileInput.value = "";
+      imageUrlInput.value = "";
       saveBtn.disabled = true;
       modalBackdrop.classList.add("show");
       titleInput.focus();
@@ -719,7 +1235,6 @@
       modalBackdrop.classList.remove("show");
     }
 
-    // --- 匯出 / 匯入 Modal 控制 ---
     function openExportModal() {
       ioTitle.textContent = "匯出行程";
       ioBody.innerHTML = "";
@@ -728,8 +1243,7 @@
       const textarea = document.createElement("textarea");
       textarea.className = "io-textarea";
       textarea.id = "exportTextarea";
-      textarea.readOnly = false; // 方便選取
-      textarea.value = JSON.stringify(state);
+      textarea.value = JSON.stringify({ state, meta });
 
       const helper = document.createElement("div");
       helper.className = "io-helper";
@@ -755,10 +1269,11 @@
         try {
           document.execCommand("copy");
           copyBtn.textContent = "已複製";
+          showToast("已複製行程文字");
           setTimeout(() => {
             copyBtn.textContent = "全選並複製";
           }, 1500);
-        } catch (e) {
+        } catch {
           alert("複製失敗，可以手動長按選取內容後複製。");
         }
       });
@@ -785,7 +1300,7 @@
       const helper = document.createElement("div");
       helper.className = "io-helper";
       helper.textContent =
-        "注意：匯入後會覆蓋目前這台裝置上的行程資料（Day1～Day6）。如果要保留現在的，可以先按「匯出行程」備份。";
+        "注意：匯入後會覆蓋目前這台裝置上的行程與機票 / 住宿資料。";
 
       ioBody.appendChild(textarea);
       ioBody.appendChild(helper);
@@ -809,14 +1324,35 @@
 
         try {
           const parsed = JSON.parse(text);
-          const normalized = normalizeState(parsed);
-          state = normalized;
+          if (parsed.state) {
+            state = normalizeState(parsed.state);
+          } else {
+            state = normalizeState(parsed);
+          }
+
+          if (parsed.meta) {
+            meta = {
+              flightInfo: parsed.meta.flightInfo || "",
+              hotelInfo: parsed.meta.hotelInfo || "",
+              ticketPdf: parsed.meta.ticketPdf || null,
+            };
+          }
+
           persistState();
+          persistMeta();
           renderBoard();
+          initInfoPanel();
           closeIoModal();
-          alert("匯入完成，現在這台裝置已套用新的行程。");
+          boardWrapperEl.classList.add("flash-success");
+          setTimeout(
+            () => boardWrapperEl.classList.remove("flash-success"),
+            800
+          );
+          showToast("行程已更新");
         } catch (e) {
-          alert("匯入失敗：格式不是有效的 JSON，或內容結構不正確。請確認貼上的是原本匯出的文字。");
+          alert(
+            "匯入失敗：格式不是有效的 JSON，或內容結構不正確。請確認貼上的是原本匯出的文字。"
+          );
         }
       });
 
@@ -831,27 +1367,7 @@
       ioBackdrop.classList.remove("show");
     }
 
-    // 讓舊匯出資料也能用（只要長得像 {day:[...]} 就整理）
-    function normalizeState(rawObj) {
-      const obj = createEmptyState();
-      if (typeof rawObj !== "object" || rawObj === null) return obj;
-
-      DAYS.forEach((day) => {
-        if (Array.isArray(rawObj[day])) {
-          obj[day] = rawObj[day].map((item) => ({
-            title: (item.title || "").toString(),
-            time: (item.time || "").toString(),
-            note: (item.note || "").toString(),
-            mapQuery: (item.mapQuery || "").toString(),
-            imageUrl: (item.imageUrl || "").toString(),
-          }));
-        }
-      });
-
-      return obj;
-    }
-
-    // --- 事件 ---
+    // --- 事件綁定 ---
     function bindEvents() {
       // 新增景點 modal
       modalCloseBtn.addEventListener("click", closeAddModal);
@@ -867,24 +1383,7 @@
         saveBtn.disabled = titleInput.value.trim() === "";
       });
 
-      saveBtn.addEventListener("click", () => {
-        const title = titleInput.value.trim();
-        if (!title) return;
-
-        const card = {
-          title,
-          time: timeInput.value.trim(),
-          note: noteInput.value.trim(),
-          mapQuery: mapInput.value.trim(),
-          imageUrl: imageInput.value.trim(),
-        };
-
-        const day = daySelect.value || currentDayForAdd;
-        state[day].push(card);
-        persistState();
-        renderBoard();
-        closeAddModal();
-      });
+      saveBtn.addEventListener("click", handleSaveCard);
 
       // 匯出 / 匯入 modal
       ioCloseBtn.addEventListener("click", closeIoModal);
@@ -896,19 +1395,116 @@
 
       exportBtn.addEventListener("click", openExportModal);
       importBtn.addEventListener("click", openImportModal);
+
+      // 底部資訊
+      flightInfoTextarea.addEventListener("input", () => {
+        meta.flightInfo = flightInfoTextarea.value;
+        persistMeta();
+      });
+
+      hotelInfoTextarea.addEventListener("input", () => {
+        meta.hotelInfo = hotelInfoTextarea.value;
+        persistMeta();
+      });
+
+      ticketPdfInput.addEventListener("change", handleTicketUpload);
+    }
+
+    function handleSaveCard() {
+      const title = titleInput.value.trim();
+      if (!title) return;
+
+      const day = daySelect.value || currentDayForAdd;
+      const period = periodSelect.value || "morning";
+
+      const baseData = {
+        id: createCardId(),
+        title,
+        time: timeInput.value.trim(),
+        note: noteInput.value.trim(),
+        mapQuery: mapInput.value.trim(),
+        imageUrl: "",
+        period,
+      };
+
+      const file = imageFileInput.files[0];
+      const url = imageUrlInput.value.trim();
+
+      saveBtn.disabled = true;
+
+      const finalize = (img) => {
+        baseData.imageUrl = img || url || "";
+        if (!state[day]) {
+          state[day] = { morning: [], afternoon: [], evening: [] };
+        }
+        if (!state[day][period]) state[day][period] = [];
+        state[day][period].push(baseData);
+        persistState();
+        renderBoard();
+        closeAddModal();
+        showToast("已加入景點");
+        saveBtn.disabled = false;
+      };
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => finalize(e.target.result);
+        reader.onerror = () => finalize(url);
+        reader.readAsDataURL(file);
+      } else {
+        finalize(url);
+      }
+    }
+
+    // 機票 PDF 上傳處理
+    function handleTicketUpload() {
+      const file = ticketPdfInput.files[0];
+      if (!file) return;
+      if (file.type !== "application/pdf") {
+        alert("請選擇 PDF 檔案。");
+        ticketPdfInput.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        meta.ticketPdf = {
+          name: file.name,
+          dataUrl: e.target.result,
+        };
+        persistMeta();
+        renderTicketStatus();
+        showToast("已上傳機票 PDF");
+      };
+      reader.readAsDataURL(file);
     }
 
     // --- 刪除卡片 ---
-    function deleteCard(day, index) {
-      if (!Array.isArray(state[day])) return;
-      state[day].splice(index, 1);
-      persistState();
-      renderBoard();
+    function deleteCardById(cardId) {
+      let changed = false;
+      DAYS.forEach((day) => {
+        PERIODS.forEach((p) => {
+          const arr = state[day][p] || [];
+          const idx = arr.findIndex((c) => c.id === cardId);
+          if (idx !== -1) {
+            arr.splice(idx, 1);
+            changed = true;
+          }
+        });
+      });
+      if (changed) {
+        persistState();
+        renderBoard();
+      }
     }
 
     // --- 儲存 ---
     function persistState() {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function persistMeta() {
+      window.localStorage.setItem(META_KEY, JSON.stringify(meta));
     }
 
     // 啟動
